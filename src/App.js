@@ -1,12 +1,15 @@
 import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
-import sdk from "rainbow-web-sdk";
+import { authenticateOauth } from "./Oauth";
+
+let sdk = window.rainbowSDK.default;
 
 function App() {
     const initialize = () => {
         document.addEventListener(sdk.RAINBOW_ONREADY, () => {
             console.log("[sdk] ready");
+            authenticateOauth();
         });
 
         document.addEventListener(sdk.RAINBOW_ONLOADED, () => {
