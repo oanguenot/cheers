@@ -33,7 +33,8 @@ function Signin() {
         );
     }
 
-    const init = async () => {
+    const init = async (e) => {
+        e.stopPropagation();
         signinWithOauth();
     };
 
@@ -91,7 +92,7 @@ function Signin() {
             <CssBaseline />
             <Grid item xs={false} sm={4} md={7} className={classes.image} />
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-                <div className={classes.paper}>
+                <form className={classes.paper}>
                     <Typography component="h1" variant="h1" className={classes.title}>
                         FUZE&nbsp;
                         <img className={classes.rainbow} src="./rainbow.png" alt="rainbow" />
@@ -109,9 +110,9 @@ function Signin() {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <form className={classes.form} noValidate>
+                    <div className={classes.form} noValidate>
                         <Button
-                            type="submit"
+                            type="button"
                             fullWidth
                             variant="contained"
                             color="primary"
@@ -134,8 +135,8 @@ function Signin() {
                         <Grid container>
                             <Grid item></Grid>
                         </Grid>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </Grid>
         </Grid>
     );
