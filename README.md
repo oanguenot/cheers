@@ -12,6 +12,9 @@ Mai 18:
 Mai 19
 
 -   Lecture des parametres host, appId du serveur au démarrage de l'application
+-   Prendre en compte les paramètres de config du serveur coté client
+-   Réfactorer le code pour sortie la partie Rainbow de la vue
+-   Affichage de la page de login
 
 [TODO]
 
@@ -19,14 +22,11 @@ Mai 19
 
 Ensuite
 
--   Prendre en compte les paramètres de config du serveur coté client
--   Réfactorer le code pour sortie la partie Rainbow de la vue
 -   Connection à Rainbow en mode Admin (autre end-point pour créer un compte guest) et récupérer son id/password
 -   Sélection d'un fichier et partage sur Rainbow avec le compte du guest
 
 Affichage
 
--   Affichage de la page de login
 -   Affichage de la page principale contenant
     -   Un spinner pendant la connection à Rainbow
     -   La liste des fichiers actuellement partagés ou partagés

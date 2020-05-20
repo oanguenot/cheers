@@ -14,5 +14,7 @@ export const signinWithOauth = async () => {
 
     let url = `https://${serverConfig.rainbow_host}/api/rainbow/authentication/v1.0/oauth/authorize${path}`;
 
-    window.location.href = url;
+    console.log("URL", url);
+
+    //window.location.href = url;
 };
