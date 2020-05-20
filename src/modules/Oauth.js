@@ -13,8 +13,5 @@ export const signinWithOauth = async () => {
     let path = `?response_type=${oauthResponseType}&client_id=${appID}&redirect_uri=${oauthRedirectURI}&scope=${oauthScope}&state=${oauthState}`;
 
     let url = `https://${serverConfig.rainbow_host}/api/rainbow/authentication/v1.0/oauth/authorize${path}`;
-
-    console.log("URL", url);
-
-    //window.location.href = url;
+    window.location.href = url;
 };

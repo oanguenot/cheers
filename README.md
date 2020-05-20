@@ -16,27 +16,37 @@ Mai 19
 -   Réfactorer le code pour sortie la partie Rainbow de la vue
 -   Affichage de la page de login
 
-[TODO]
+Mai 20
 
--   Problème pour charger le SDK avec le default --> supprimer du fichier.
+-   Creation de la page principale contenant un spinner pendant la phase de chargement + login du SDK
+-   Retour à la page de login si echec
+-   Affichage du bouton upload si ok
 
-Ensuite
+[PROBLEMATIQUE]
+
+-   Problème pour charger le SDK avec le default
+    -   Solution temporaire: Supprimer du fichier.
+-   Problématique des users existants qui vont voir des conversations avec des guests + un fichier partager.
+    -   Voir pour fermer la conversation
+-   Problématique de l'usage d'une app tierce --> Quota > 1GO
+    -   Voir pour réutiliser une app taguée Ucaas et non CpaaS.
+-   Problématique de l'expiration du guest
+    -   Le compte guest expire-t-il au bout du TTL ?
+-   Problématique de la création de guests
+    -   Nécessité d'avoir une compagnie "Fuze" sur Sandbox / prod avec un compte admin
+
+[DEV SERVER]
 
 -   Connection à Rainbow en mode Admin (autre end-point pour créer un compte guest) et récupérer son id/password
+
+[DEV CLIENT]
+
 -   Sélection d'un fichier et partage sur Rainbow avec le compte du guest
-
-Affichage
-
 -   Affichage de la page principale contenant
-    -   Un spinner pendant la connection à Rainbow
     -   La liste des fichiers actuellement partagés ou partagés
     -   Un file uploader
-
-Problématique des users existants qui vont voir des conversations avec des guests + un fichier partager.
---> Voir pour fermer la conversation
-
-PRoblématique de l'usage d'une app tierce --> Quota > 1GO
---> Voir pour réutiliser une app taguée Ucaas et non CpaaS.
-
-Connection en mode guest avec le login/password du lien
-Affichage du fichier si existant --> tant que la connection est possible, le fichier est là
+    -   affichage du nom du user connecté avec son avatar dans la topbar + bouton logout
+-   Connection avec le lien
+    -   Affichage directement de la bonne page + visualisation du fichier
+    -   Téléchargement du fichier
+    -   Message d'erreur si impossibilité de se connecter (expiration guest)

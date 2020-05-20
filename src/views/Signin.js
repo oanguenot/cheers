@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "./logo.svg";
 import "./Signin.css";
 
@@ -18,8 +18,13 @@ import Image from "material-ui-image";
 import { makeStyles } from "@material-ui/core/styles";
 
 import { signinWithOauth } from "../modules/Oauth";
+import { SWITCH_TO_DISCONNECTED } from "../actions/connectionAction";
 
-function Signin() {
+function Signin({ dispatch }) {
+    useEffect(() => {
+        dispatch({ type: SWITCH_TO_DISCONNECTED, payload: {} });
+    }, []);
+
     function Copyright() {
         return (
             <Typography variant="body2" color="textSecondary" align="center">
@@ -94,7 +99,7 @@ function Signin() {
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <form className={classes.paper}>
                     <Typography component="h1" variant="h1" className={classes.title}>
-                        FUZE&nbsp;
+                        FASTup&nbsp;
                         <img className={classes.rainbow} src="./rainbow.png" alt="rainbow" />
                     </Typography>
 
