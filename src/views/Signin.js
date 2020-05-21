@@ -19,10 +19,17 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import { signinWithOauth } from "../modules/Oauth";
 import { SWITCH_TO_DISCONNECTED } from "../actions/connectionAction";
+import { requestId } from "../modules/Config";
 
 function Signin({ dispatch }) {
     useEffect(() => {
         dispatch({ type: SWITCH_TO_DISCONNECTED, payload: {} });
+
+        const test = async () => {
+            const id = await requestId(1000);
+            console.log(">>>", id);
+        };
+        test();
     }, []);
 
     function Copyright() {
@@ -99,7 +106,7 @@ function Signin({ dispatch }) {
             <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
                 <form className={classes.paper}>
                     <Typography component="h1" variant="h1" className={classes.title}>
-                        FASTup&nbsp;
+                        SHARING&nbsp;
                         <img className={classes.rainbow} src="./rainbow.png" alt="rainbow" />
                     </Typography>
 

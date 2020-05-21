@@ -139,7 +139,7 @@ function Signed() {
                 <Toolbar>
                     <FileCopy className={classes.icon} />
                     <Typography variant="h6" color="inherit" noWrap>
-                        FASTup
+                        SHARING
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -147,7 +147,7 @@ function Signed() {
                 <div className={classes.heroContent}>
                     <Container maxWidth="sm">
                         <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-                            FASTup
+                            SHARING
                         </Typography>
                         <Typography variant="h5" align="center" color="textSecondary" paragraph>
                             Share a file temporarily with someone or several persons instantaneously !
@@ -215,10 +215,10 @@ function Signed() {
             </main>
             <footer className={classes.footer}>
                 <Typography variant="h6" align="center" gutterBottom>
-                    FASTup
+                    SHARING
                 </Typography>
                 <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-                    FASTup is propulsed by Rainbow!
+                    <i>Propulsed by Rainbow!</i>
                 </Typography>
                 <Copyright />
             </footer>

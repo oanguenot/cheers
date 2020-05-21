@@ -22,6 +22,10 @@ Mai 20
 -   Retour à la page de login si echec
 -   Affichage du bouton upload si ok
 
+Mai 21
+
+-   Connection à Rainbow en mode Admin (autre end-point pour créer un compte guest) et récupérer son id
+
 [PROBLEMATIQUE]
 
 -   Problème pour charger le SDK avec le default
@@ -37,7 +41,7 @@ Mai 20
 
 [DEV SERVER]
 
--   Connection à Rainbow en mode Admin (autre end-point pour créer un compte guest) et récupérer son id/password
+-   Forcer à supprimer le guest si le téléchargement échoue ou est annulé.
 
 [DEV CLIENT]
 
@@ -50,3 +54,12 @@ Mai 20
     -   Affichage directement de la bonne page + visualisation du fichier
     -   Téléchargement du fichier
     -   Message d'erreur si impossibilité de se connecter (expiration guest)
+
+[Account]
+
+-   Sandbox:
+    -   Company: Sharing
+    -   Admin: admin@sharing-openrainbow.com / Password_123
+-   Prod
+    -   Company: ?
+    -   Admin: ?

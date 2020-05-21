@@ -28,3 +28,20 @@ export const loadConfigFromServer = async () => {
 export const config = () => {
     return _config;
 };
+
+export const requestId = async (ttl) => {
+    let id = null;
+
+    await axios
+        .get(`/api/admin?ttl=${ttl}`)
+        .then(function (response) {
+            // handle success
+            id = response.data;
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        });
+
+    return id;
+};

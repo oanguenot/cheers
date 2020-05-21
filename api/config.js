@@ -2,7 +2,7 @@ module.exports = async (req, res) => {
     const vercel_url = process.env.VERCEL_URL.length > 0 ? process.env.VERCEL_URL : "http://localhost:3000";
 
     const config = {
-        app_id: process.env.APP_ID,
+        app_id: process.env.RAINBOW_APP_ID,
         host: vercel_url,
         rainbow_host: process.env.RAINBOW_HOST,
         oauth_redirect_uri: process.env.RAINBOW_REDIRECT_URI,

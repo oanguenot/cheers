@@ -4,7 +4,7 @@ const qs = require("qs");
 const generateJWTTokenFromAccessToken = async (accessCode) => {
     return new Promise((resolve, reject) => {
         const url = `https://${process.env.RAINBOW_HOST}:443/api/rainbow/authentication/v1.0/oauth/token`;
-        const applicationAuthent = process.env.APP_ID + ":" + process.env.APP_SECRET;
+        const applicationAuthent = process.env.APP_ID + ":" + process.env.RAINBOW_APP_SECRET;
 
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded",
