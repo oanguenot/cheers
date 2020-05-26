@@ -36,7 +36,7 @@ export const requestId = async (ttl) => {
         .get(`/api/admin?ttl=${ttl}`)
         .then(function (response) {
             // handle success
-            id = response.data;
+            id = response.data.id;
         })
         .catch(function (error) {
             // handle error

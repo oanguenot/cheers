@@ -26,6 +26,17 @@ Mai 21
 
 -   Connection à Rainbow en mode Admin (autre end-point pour créer un compte guest) et récupérer son id
 
+Mai 24
+
+-   Affichage du file uploader
+-   Utilisation de l'ID pour récupérer le guest, créer la conversation et uploader le fichier sélectionné
+
+Mai 25
+
+-   Découpage de l'écran principal
+-   Création d'une bulle pour y stocker la liste des fichiers partagés (afin de les retrouver)
+-   Affichage d'une liste vide ou d'une liste des fichiers actuellement partagés
+
 [PROBLEMATIQUE]
 
 -   Problème pour charger le SDK avec le default
@@ -38,6 +49,10 @@ Mai 21
     -   Le compte guest expire-t-il au bout du TTL ?
 -   Problématique de la création de guests
     -   Nécessité d'avoir une compagnie "Fuze" sur Sandbox / prod avec un compte admin
+-   Problématique de retrouver les fichier partagés
+    -   Utilisation d'une bulle et des custom data pour y stocker les id des fichiers
+-   Problématique de la limitation de la taille de fichier à envoyé
+    -   Limité à 100Mo par fichier
 
 [DEV SERVER]
 
@@ -45,11 +60,9 @@ Mai 21
 
 [DEV CLIENT]
 
--   Sélection d'un fichier et partage sur Rainbow avec le compte du guest
 -   Affichage de la page principale contenant
-    -   La liste des fichiers actuellement partagés ou partagés
-    -   Un file uploader
     -   affichage du nom du user connecté avec son avatar dans la topbar + bouton logout
+    -   Affichage de la progression de l'uplad avec la possibilité d'annuler l'upload
 -   Connection avec le lien
     -   Affichage directement de la bonne page + visualisation du fichier
     -   Téléchargement du fichier

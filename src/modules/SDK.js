@@ -16,7 +16,7 @@ let _dispatch = null;
 const signinOnRainbow = async (token, host) => {
     try {
         const result = await sdk.connection.signinOnRainbowHostedWithToken(_token, _config.rainbow_host);
-        console.log("[sdk] signed from await", result);
+        console.log("[sdk] signed successfully", result);
         _dispatch({ type: SWITCH_TO_CONNECTED, payload: {} });
     } catch (err) {
         console.error("[sdk] can't sign to Rainbow", err);
@@ -47,6 +47,18 @@ document.addEventListener(sdk.connection.RAINBOW_ONSIGNED, () => {
 
 document.addEventListener(sdk.connection.RAINBOW_ONCONNECTIONSTATECHANGED, (state) => {
     console.log("[sdk] progress", state);
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, (event) => {
+    console.log("[sdk] upload progress", event.detail);
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, (event) => {
+    console.log("[sdk] upload successfully", event.detail);
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, (event) => {
+    console.log("[sdk] upload error", event.detail);
 });
 
 export const initialize = async () => {
@@ -83,4 +95,125 @@ export const connectWithToken = async (token) => {
     _dispatch({ type: SWITCH_TO_INPROGRESS, payload: {} });
 
     initialize();
+};
+
+export const getQuota = async () => {
+    if (!sdk) {
+        console.error("[sdk] can't compute quota - Rainbow SDK not loaded correctly!");
+        return;
+    } else {
+        try {
+            const quota = await sdk.fileStorage.getUserQuotaConsumption();
+            console.log("[sdk] quota found", quota);
+            return quota;
+        } catch (err) {
+            console.error("[sdk] can't compute quota - error!", err);
+            return;
+        }
+    }
+};
+
+export const getConversationFromContactId = async (id) => {
+    try {
+        const contact = await sdk.contacts.searchById(id);
+        console.log("CONTACT:", contact);
+        if (!contact) {
+            console.error("Can't get conversation - no contact found");
+            return;
+        }
+        const conversation = sdk.conversations.openConversationForContact(contact);
+        if (!conversation) {
+            console.error("Can't get conversation - no conversation");
+        }
+        return conversation;
+    } catch (err) {
+        console.error("Can't get conversation - error", err);
+        return;
+    }
+};
+
+export const shareFileInConversation = async (file, conversation) => {
+    try {
+        const message = await sdk.fileStorage.uploadFileToConversation(conversation, file);
+        return message;
+    } catch (err) {
+        console.error("Can't share file - error", err);
+        return;
+    }
+};
+
+export const closeOpenedConversation = async (conversation) => {
+    try {
+        await sdk.conversations.closeConversation(conversation);
+    } catch (err) {
+        console.error("Can't close conversation - error", err);
+    }
+};
+
+export const updateBubbleCustomData = async (message, bubble) => {
+    try {
+        let customData = bubble.customData;
+
+        if (!customData.guests) {
+            customData.guests = [];
+        }
+
+        customData.guests.push(message.fileId);
+
+        return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
+    } catch (err) {
+        console.error("Can't update custom data - error", err);
+    }
+};
+
+export const getSharedFilesFromBubble = async (bubble) => {
+    try {
+        const customData = bubble.customData;
+
+        const guestIDSharedList = customData.guests || [];
+
+        let files = await sdk.fileStorage.getAllFilesSent();
+
+        console.log(">>>FILES", files);
+
+        files = files.filter((file) => {
+            if (guestIDSharedList.length === 0) {
+                return false;
+            }
+
+            if (file.viewers.length !== 1) {
+                return false;
+            }
+
+            return guestIDSharedList.includes(file.viewers[0].viewerId);
+        });
+
+        console.log(">>>INCLUDES", files);
+
+        return files;
+    } catch (err) {
+        console.error("Can't get files - error", err);
+    }
+};
+
+export const getOrCreateRoom = async () => {
+    try {
+        let bubble = await sdk.bubbles.getAllBubbles().filter((bubble) => {
+            return bubble.name === "Sharing" && bubble.desc === "Created by Sharing application - do not remove";
+        });
+
+        console.log("BUBBLE1", bubble);
+
+        if (bubble.length === 1) {
+            return bubble[0];
+        }
+
+        bubble = await sdk.bubbles.createBubble("Sharing", "Created by Sharing application - do not remove");
+
+        console.log("BUBBLE", bubble);
+
+        return bubble;
+    } catch (err) {
+        console.error("can't create room - error", err);
+    }
 };
