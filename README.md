@@ -37,6 +37,10 @@ Mai 25
 -   Création d'une bulle pour y stocker la liste des fichiers partagés (afin de les retrouver)
 -   Affichage d'une liste vide ou d'une liste des fichiers actuellement partagés
 
+MAi 26
+
+-   Affichage spinner (pas encore centré)
+
 [PROBLEMATIQUE]
 
 -   Problème pour charger le SDK avec le default
@@ -52,7 +56,9 @@ Mai 25
 -   Problématique de retrouver les fichier partagés
     -   Utilisation d'une bulle et des custom data pour y stocker les id des fichiers
 -   Problématique de la limitation de la taille de fichier à envoyé
-    -   Limité à 100Mo par fichier
+    -   Limité à 100Mo par fichier (limitation du SDK: à enlever)
+-   Problématique du nombre de fichiers.
+    -   Est-ce que le getAllSent renvois tous les fichiers partagés ? A vérifier coté SDK
 
 [DEV SERVER]
 
@@ -62,7 +68,9 @@ Mai 25
 
 -   Affichage de la page principale contenant
     -   affichage du nom du user connecté avec son avatar dans la topbar + bouton logout
-    -   Affichage de la progression de l'uplad avec la possibilité d'annuler l'upload
+    -   Affichage de la progression de l'uplad + nom ficher en cours d'upload
+    -   Possibilité d'annuler l'upload
+    -   Mise à jour de la liste des fichiers quand un upload est terminé avec succes
 -   Connection avec le lien
     -   Affichage directement de la bonne page + visualisation du fichier
     -   Téléchargement du fichier

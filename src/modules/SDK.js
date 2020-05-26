@@ -6,12 +6,14 @@ import {
     SWITCH_TO_INPROGRESS,
     SWITCH_TO_ABORTED,
 } from "../actions/connectionAction";
+import { UPDATE_PROGRESS, UPDATE_COMPLETED, UPDATE_ERROR } from "../actions/shareAction";
 
 let sdk = window.rainbowSDK.default;
 
 let _config = null;
 let _token = "";
 let _dispatch = null;
+let _shareDispatch = null;
 
 const signinOnRainbow = async (token, host) => {
     try {
@@ -51,14 +53,20 @@ document.addEventListener(sdk.connection.RAINBOW_ONCONNECTIONSTATECHANGED, (stat
 
 document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, (event) => {
     console.log("[sdk] upload progress", event.detail);
+    _shareDispatch({
+        type: UPDATE_PROGRESS,
+        payload: { id: event.detail.id, progress: event.detail.chunkPerformedPercent || 5 },
+    });
 });
 
 document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, (event) => {
     console.log("[sdk] upload successfully", event.detail);
+    _shareDispatch({ type: UPDATE_COMPLETED, payload: { id: event.detail.id } });
 });
 
 document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, (event) => {
     console.log("[sdk] upload error", event.detail);
+    _shareDispatch({ type: UPDATE_ERROR, payload: { id: event.detail.id } });
 });
 
 export const initialize = async () => {
@@ -68,6 +76,10 @@ export const initialize = async () => {
 
 export const dispatcher = (dispatch) => {
     _dispatch = dispatch;
+};
+
+export const shareDispatcher = (dispatch) => {
+    _shareDispatch = dispatch;
 };
 
 export const connectWithToken = async (token) => {
@@ -154,11 +166,11 @@ export const updateBubbleCustomData = async (message, bubble) => {
     try {
         let customData = bubble.customData;
 
-        if (!customData.guests) {
-            customData.guests = [];
+        if (!customData.files) {
+            customData.files = [];
         }
 
-        customData.guests.push(message.fileId);
+        customData.files.push(message.fileId);
 
         return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
     } catch (err) {
@@ -170,22 +182,18 @@ export const getSharedFilesFromBubble = async (bubble) => {
     try {
         const customData = bubble.customData;
 
-        const guestIDSharedList = customData.guests || [];
+        const fileIdShared = customData.files || [];
 
         let files = await sdk.fileStorage.getAllFilesSent();
 
         console.log(">>>FILES", files);
 
         files = files.filter((file) => {
-            if (guestIDSharedList.length === 0) {
+            if (fileIdShared.length === 0) {
                 return false;
             }
 
-            if (file.viewers.length !== 1) {
-                return false;
-            }
-
-            return guestIDSharedList.includes(file.viewers[0].viewerId);
+            return fileIdShared.includes(file.id);
         });
 
         console.log(">>>INCLUDES", files);
@@ -202,9 +210,8 @@ export const getOrCreateRoom = async () => {
             return bubble.name === "Sharing" && bubble.desc === "Created by Sharing application - do not remove";
         });
 
-        console.log("BUBBLE1", bubble);
-
         if (bubble.length === 1) {
+            console.log("BUBBLE1", bubble[0]);
             return bubble[0];
         }
 

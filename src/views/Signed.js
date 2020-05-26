@@ -15,6 +15,7 @@ import Footer from "./Footer";
 import InProgress from "./InProgress";
 import Header from "./Header";
 
+import { shareDispatcher } from "../modules/SDK";
 import ShareContext from "../contexts/shareContext";
 
 import { shareReducer, initialShareState } from "../reducers/shareReducer";
@@ -22,7 +23,7 @@ import { shareReducer, initialShareState } from "../reducers/shareReducer";
 function Signed() {
     let location = useLocation();
 
-    const [bubbleState, dispatch] = useReducer(shareReducer, initialShareState);
+    const [shareState, dispatch] = useReducer(shareReducer, initialShareState);
 
     let query = new URLSearchParams(location.search);
     const access_token = query.get("access_token");
@@ -37,11 +38,13 @@ function Signed() {
 
     const useStyles = makeStyles((theme) => ({
         connected_area: {
-            height: "calc(100% - 340px)",
+            height: "calc(100% - 380px)",
         },
     }));
 
     const classes = useStyles();
+
+    shareDispatcher(dispatch);
 
     return (
         <React.Fragment>
@@ -51,7 +54,7 @@ function Signed() {
             <main>
                 <Header />
                 {appState.connectionState === "connected" && (
-                    <ShareContext.Provider value={bubbleState}>
+                    <ShareContext.Provider value={shareState}>
                         <div className={classes.connected_area}>
                             <Uploader />
                             <Files dispatch={dispatch} />

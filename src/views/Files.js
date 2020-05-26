@@ -51,11 +51,9 @@ function Files({ dispatch }) {
         icon: {
             marginRight: theme.spacing(2),
         },
-        files_list_title: {
-            marginTop: theme.spacing(4),
-        },
+        files_list_title: {},
         files_list_placeholder: {
-            height: "calc(100% - 150px)",
+            height: "calc(100% - 180px)",
         },
         files_list_placeholder_text: {
             textAlign: "center",
@@ -68,7 +66,7 @@ function Files({ dispatch }) {
         cardContainer: {
             paddingTop: theme.spacing(6),
             paddingBottom: theme.spacing(6),
-            height: "calc(100% - 150px)",
+            height: "calc(100% - 180px)",
         },
     }));
 
@@ -77,13 +75,6 @@ function Files({ dispatch }) {
     return (
         <Container className={classes.cardContainer} maxWidth="md">
             <Grid item xs={12} md={12} style={{ height: "100%" }}>
-                <div>
-                    <Typography variant="h6" className={classes.title}>
-                        Quota
-                    </Typography>
-                    <LinearProgress variant="determinate" value={quota} />
-                </div>
-
                 <div className={classes.files_list_title}>
                     <Typography variant="h6" className={classes.title}>
                         Files currently shared
@@ -121,6 +112,15 @@ function Files({ dispatch }) {
                             </Typography>
                         </Container>
                     )}
+                </div>
+                <div>
+                    <Typography variant="h6" className={classes.title}>
+                        Free space
+                    </Typography>
+                    <LinearProgress variant="determinate" value={quota} />
+                    <Typography variant="body2" className={classes.title} align="right">
+                        {`${(100 - quota).toFixed(2)}%`}
+                    </Typography>
                 </div>
             </Grid>
         </Container>
