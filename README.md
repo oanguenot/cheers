@@ -41,6 +41,11 @@ MAi 26
 
 -   Affichage spinner (pas encore centré)
 
+Mai 27
+
+-   Remplacement circular spinner par linear spinner + text affiché en dessous
+-   Mise à jour de la liste des fichiers / quota quand un upload est terminé avec succes
+
 [PROBLEMATIQUE]
 
 -   Problème pour charger le SDK avec le default
@@ -70,7 +75,7 @@ MAi 26
     -   affichage du nom du user connecté avec son avatar dans la topbar + bouton logout
     -   Affichage de la progression de l'uplad + nom ficher en cours d'upload
     -   Possibilité d'annuler l'upload
-    -   Mise à jour de la liste des fichiers quand un upload est terminé avec succes
+    -   Protéger l'appli pour éviter de voir des upload quand on le fait depuis Rainbow (fileId)
 -   Connection avec le lien
     -   Affichage directement de la bonne page + visualisation du fichier
     -   Téléchargement du fichier

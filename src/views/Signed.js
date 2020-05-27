@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useReducer } from "react";
 import { useLocation, Redirect } from "react-router-dom";
 
 import { connectWithToken } from "../modules/SDK";
-import "./Signed.css";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
@@ -56,7 +55,7 @@ function Signed() {
                 {appState.connectionState === "connected" && (
                     <ShareContext.Provider value={shareState}>
                         <div className={classes.connected_area}>
-                            <Uploader />
+                            <Uploader dispatch={dispatch} />
                             <Files dispatch={dispatch} />
                         </div>
                     </ShareContext.Provider>

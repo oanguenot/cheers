@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import moment from "moment";
 
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
@@ -15,9 +16,13 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Avatar from "@material-ui/core/Avatar";
 import FolderIcon from "@material-ui/icons/Folder";
 import DeleteIcon from "@material-ui/icons/Delete";
+import LinkIcon from "@material-ui/icons/Link";
+
 import IconButton from "@material-ui/core/IconButton";
 
 import ConnectionContext from "../contexts/connectionContext";
+import ShareContext from "../contexts/shareContext";
+
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { getQuota, getSharedFilesFromBubble, getOrCreateRoom } from "../modules/SDK";
 import { SET_BUBBLE } from "../actions/shareAction";
@@ -26,6 +31,7 @@ function Files({ dispatch }) {
     const [quota, setQuota] = useState(0);
     const [files, setFiles] = useState([]);
     const appState = useContext(ConnectionContext);
+    const shareState = useContext(ShareContext);
 
     useEffect(() => {
         const fetchQuota = async () => {
@@ -47,13 +53,23 @@ function Files({ dispatch }) {
         }
     }, [appState]);
 
+    useEffect(() => {
+        const fetchFiles = async () => {
+            const f = await getSharedFilesFromBubble(shareState.bubble);
+            setFiles(f);
+        };
+        if (appState.connectionState === "connected" && shareState.bubble) {
+            fetchFiles();
+        }
+    }, [shareState.lastFilesUpdate]);
+
     const useStyles = makeStyles((theme) => ({
         icon: {
             marginRight: theme.spacing(2),
         },
         files_list_title: {},
         files_list_placeholder: {
-            height: "calc(100% - 180px)",
+            height: "calc(100% - 200px)",
         },
         files_list_placeholder_text: {
             textAlign: "center",
@@ -66,7 +82,7 @@ function Files({ dispatch }) {
         cardContainer: {
             paddingTop: theme.spacing(6),
             paddingBottom: theme.spacing(6),
-            height: "calc(100% - 180px)",
+            height: "calc(100% - 200px)",
         },
     }));
 
@@ -84,6 +100,9 @@ function Files({ dispatch }) {
                     {files && (
                         <List dense={true} className={classes.files_list}>
                             {files.map((file, index) => {
+                                let date = file.uploadedDate ? new Date(file.uploadedDate) : new Date.now();
+                                let formatedDate = moment(date).format("lll");
+
                                 return (
                                     <React.Fragment key={index}>
                                         <ListItem>
@@ -92,10 +111,18 @@ function Files({ dispatch }) {
                                                     <FolderIcon />
                                                 </Avatar>
                                             </ListItemAvatar>
-                                            <ListItemText primary={file.fileName} secondary={file.uploadedDate} />
+                                            <ListItemText
+                                                primary={file.fileName}
+                                                secondary={`Shared since ${formatedDate}`}
+                                            />
                                             <ListItemSecondaryAction>
                                                 <IconButton edge="end" aria-label="delete">
                                                     <DeleteIcon />
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge="end" aria-label="delete">
+                                                    <LinkIcon />
                                                 </IconButton>
                                             </ListItemSecondaryAction>
                                         </ListItem>
@@ -118,7 +145,7 @@ function Files({ dispatch }) {
                         Free space
                     </Typography>
                     <LinearProgress variant="determinate" value={quota} />
-                    <Typography variant="body2" className={classes.title} align="right">
+                    <Typography variant="body2" align="right">
                         {`${(100 - quota).toFixed(2)}%`}
                     </Typography>
                 </div>

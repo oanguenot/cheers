@@ -19,14 +19,14 @@ const initialShareState = {
     bubble: null,
     progress: 0,
     uploadInProgress: false,
+    lastFilesUpdate: new Date(),
     uploadStatus: UPLOAD_STATE.NOT_STARTED,
 };
 
 const shareReducer = (state = initialShareState, action) => {
     switch (action.type) {
         case SET_BUBBLE:
-            console.log(">>>WARNING, SET BUBBLE", action.payload.bubble);
-            return { ...state, bubble: action.payload.bubble };
+            return { ...state, bubble: action.payload.bubble, lastFilesUpdate: new Date() };
         case UPDATE_PROGRESS:
             return {
                 ...state,
@@ -41,7 +41,6 @@ const shareReducer = (state = initialShareState, action) => {
         case UPDATE_ERROR:
             return { ...state, uploadInProgress: false, uploadStatus: UPLOAD_STATE.ERROR };
         default:
-            console.log(">>>DEFAULT", action.type);
             return state;
     }
 };

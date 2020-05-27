@@ -3,6 +3,25 @@ import ReactDOM from "react-dom";
 import "./index.css";
 import AppRouter from "./views/Router";
 import * as serviceWorker from "./serviceWorker";
+import moment from "moment";
+
+const load = () => {
+    let lang = navigator.language || navigator.userLanguage || "en-US";
+
+    moment.locale(lang, {
+        week: {
+            dow: 1,
+            doy: 4,
+        },
+    });
+};
+
+// Wait for the DOM complete to start
+if (document.readyState !== "complete") {
+    document.addEventListener("DOMContentLoaded", load);
+} else {
+    load();
+}
 
 ReactDOM.render(
     <React.StrictMode>
