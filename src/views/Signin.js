@@ -11,11 +11,11 @@ import Box from "@material-ui/core/Box";
 import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
-import FileCopy from "@material-ui/icons/FileCopy";
-import { palette } from "@material-ui/system";
+import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
 
-import Image from "material-ui-image";
 import { makeStyles } from "@material-ui/core/styles";
+
+import Copyright from "./Copyright";
 
 import { signinWithOauth } from "../modules/Oauth";
 import { SWITCH_TO_DISCONNECTED } from "../actions/connectionAction";
@@ -24,19 +24,6 @@ function Signin({ dispatch }) {
     useEffect(() => {
         dispatch({ type: SWITCH_TO_DISCONNECTED, payload: {} });
     }, []);
-
-    function Copyright() {
-        return (
-            <Typography variant="body2" color="textSecondary" align="center">
-                {"Copyright © "}
-                <Link color="inherit" href="https://material-ui.com/">
-                    ALE-International
-                </Link>{" "}
-                {new Date().getFullYear()}
-                {"."}
-            </Typography>
-        );
-    }
 
     const init = async (e) => {
         e.stopPropagation();
@@ -84,7 +71,7 @@ function Signin({ dispatch }) {
             paddingBottom: theme.spacing(4),
         },
         logo: {
-            fontSize: "112px",
+            fontSize: "124px",
             margin: theme.spacing(1, 1, 4),
             color: theme.palette.grey[800],
         },
@@ -103,11 +90,10 @@ function Signin({ dispatch }) {
                         <img className={classes.rainbow} src="./rainbow.png" alt="rainbow" />
                     </Typography>
 
-                    <Typography className={classes.subtitle} component="h5" variant="h5">
-                        Share files temporarily
+                    <Typography align="center" className={classes.subtitle} component="h5" variant="h5">
+                        Share a file instantaneously and temporarily with someone!
                     </Typography>
-                    <FileCopy className={classes.logo} />
-
+                    <CloudCircle className={classes.logo} />
                     <hr />
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon />

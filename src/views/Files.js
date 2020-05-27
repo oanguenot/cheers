@@ -14,7 +14,7 @@ import Divider from "@material-ui/core/Divider";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Avatar from "@material-ui/core/Avatar";
-import FolderIcon from "@material-ui/icons/Folder";
+import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
 import DeleteIcon from "@material-ui/icons/Delete";
 import LinkIcon from "@material-ui/icons/Link";
 
@@ -84,12 +84,24 @@ function Files({ dispatch }) {
             paddingBottom: theme.spacing(6),
             height: "calc(100% - 200px)",
         },
+        files_quota: {
+            marginBottom: theme.spacing(6),
+        },
     }));
 
     const classes = useStyles();
 
     return (
         <Container className={classes.cardContainer} maxWidth="md">
+            <Container className={classes.files_quota}>
+                <Typography variant="body1" className={classes.title}>
+                    Free space
+                </Typography>
+                <LinearProgress variant="determinate" value={quota} />
+                <Typography variant="body2" align="right">
+                    {`${(100 - quota).toFixed(2)}%`}
+                </Typography>
+            </Container>
             <Grid item xs={12} md={12} style={{ height: "100%" }}>
                 <div className={classes.files_list_title}>
                     <Typography variant="h6" className={classes.title}>
@@ -100,16 +112,14 @@ function Files({ dispatch }) {
                     {files && (
                         <List dense={true} className={classes.files_list}>
                             {files.map((file, index) => {
-                                let date = file.uploadedDate ? new Date(file.uploadedDate) : new Date.now();
+                                let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
                                 let formatedDate = moment(date).format("lll");
 
                                 return (
                                     <React.Fragment key={index}>
                                         <ListItem>
                                             <ListItemAvatar>
-                                                <Avatar>
-                                                    <FolderIcon />
-                                                </Avatar>
+                                                <CloudCircle style={{ fontSize: 32 }} />
                                             </ListItemAvatar>
                                             <ListItemText
                                                 primary={file.fileName}
@@ -139,15 +149,6 @@ function Files({ dispatch }) {
                             </Typography>
                         </Container>
                     )}
-                </div>
-                <div>
-                    <Typography variant="h6" className={classes.title}>
-                        Free space
-                    </Typography>
-                    <LinearProgress variant="determinate" value={quota} />
-                    <Typography variant="body2" align="right">
-                        {`${(100 - quota).toFixed(2)}%`}
-                    </Typography>
                 </div>
             </Grid>
         </Container>

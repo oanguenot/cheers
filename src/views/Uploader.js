@@ -85,7 +85,7 @@ function Uploader({ dispatch }) {
                             <div className={classes.progress}>
                                 <LinearProgress variant="determinate" value={shareState.progress} color="secondary" />
 
-                                <Typography variant="body2" align="center">
+                                <Typography variant="body2" color="secondary" align="center">
                                     Transfer is in progress. Please wait...
                                 </Typography>
                             </div>

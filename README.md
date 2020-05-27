@@ -59,7 +59,7 @@ Mai 27
 -   Problématique de la création de guests
     -   Nécessité d'avoir une compagnie "Fuze" sur Sandbox / prod avec un compte admin
 -   Problématique de retrouver les fichier partagés
-    -   Utilisation d'une bulle et des custom data pour y stocker les id des fichiers
+    -   Utilisation d'une bulle et des custom data pour y stocker les id des fichiers + une expiration date afin de montrer que le lien n'est plus fonctionnel
 -   Problématique de la limitation de la taille de fichier à envoyé
     -   Limité à 100Mo par fichier (limitation du SDK: à enlever)
 -   Problématique du nombre de fichiers.
@@ -76,6 +76,7 @@ Mai 27
     -   Affichage de la progression de l'uplad + nom ficher en cours d'upload
     -   Possibilité d'annuler l'upload
     -   Protéger l'appli pour éviter de voir des upload quand on le fait depuis Rainbow (fileId)
+    -   Tri de la liste des fichiers pour avoir le plus récent en haut
 -   Connection avec le lien
     -   Affichage directement de la bonne page + visualisation du fichier
     -   Téléchargement du fichier

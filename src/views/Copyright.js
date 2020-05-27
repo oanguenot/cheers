@@ -7,7 +7,7 @@ function Copyright({ dispatch }) {
     return (
         <Typography variant="body2" color="textSecondary" align="center">
             {"Copyright © "}
-            <Link color="inherit" href="https://www.al-enterprise.com/">
+            <Link color="text.secondary" href="https://www.al-enterprise.com/">
                 Alcatel-Lucent Enterprise
             </Link>{" "}
             {new Date().getFullYear()}
