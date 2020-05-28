@@ -9,6 +9,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     height: 100%;
+    background-color: white;
 }
 
 code {
@@ -20,5 +21,5 @@ code {
 }
 
 main {
-    height: calc(100% - 64px);
+    height: calc(100% - 164px);
 }

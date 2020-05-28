@@ -37,7 +37,7 @@ function Signed() {
 
     const useStyles = makeStyles((theme) => ({
         connected_area: {
-            height: "calc(100% - 380px)",
+            height: "calc(100% - 200px)",
         },
     }));
 

@@ -28,13 +28,13 @@ function Uploader({ dispatch }) {
 
     const useStyles = makeStyles((theme) => ({
         heroButtons: {
-            marginTop: theme.spacing(4),
+            paddingTop: theme.spacing(4),
         },
         input: {
             display: "none",
         },
         progress: {
-            marginTop: theme.spacing(2),
+            marginTop: theme.spacing(1),
         },
     }));
 
@@ -72,7 +72,7 @@ function Uploader({ dispatch }) {
     return (
         <Container maxWidth="sm">
             <div className={classes.heroButtons}>
-                <Grid container spacing={2} justify="center">
+                <Grid container justify="center">
                     <Grid item align="center">
                         <input id="contained-button-file" className={classes.input} ref={inputFile} type="file" />
                         <label htmlFor="contained-button-file">

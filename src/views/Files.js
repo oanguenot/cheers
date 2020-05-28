@@ -64,28 +64,28 @@ function Files({ dispatch }) {
     }, [shareState.lastFilesUpdate]);
 
     const useStyles = makeStyles((theme) => ({
-        icon: {
-            marginRight: theme.spacing(2),
-        },
         files_list_title: {},
         files_list_placeholder: {
-            height: "calc(100% - 200px)",
+            height: "calc(100% - 64px)",
         },
         files_list_placeholder_text: {
             textAlign: "center",
             paddingTop: "50%",
         },
         files_list: {
-            height: "100%",
+            height: "calc(100% - 32px)",
             overflowY: "scroll",
+            padding: 0,
         },
         cardContainer: {
-            paddingTop: theme.spacing(6),
-            paddingBottom: theme.spacing(6),
-            height: "calc(100% - 200px)",
+            paddingTop: theme.spacing(4),
+            height: "calc(100% - 64px)",
         },
         files_quota: {
-            marginBottom: theme.spacing(6),
+            height: "64px",
+        },
+        files_area: {
+            height: "calc(100% - 64px)",
         },
     }));
 
@@ -94,62 +94,57 @@ function Files({ dispatch }) {
     return (
         <Container className={classes.cardContainer} maxWidth="md">
             <Container className={classes.files_quota}>
-                <Typography variant="body1" className={classes.title}>
-                    Free space
-                </Typography>
+                <Typography variant="body1">Free space</Typography>
                 <LinearProgress variant="determinate" value={quota} />
                 <Typography variant="body2" align="right">
                     {`${(100 - quota).toFixed(2)}%`}
                 </Typography>
             </Container>
-            <Grid item xs={12} md={12} style={{ height: "100%" }}>
+            <Grid item xs={12} md={12} className={classes.files_area}>
                 <div className={classes.files_list_title}>
-                    <Typography variant="h6" className={classes.title}>
-                        Files currently shared
-                    </Typography>
+                    <Typography variant="h6">Files shared</Typography>
                 </div>
-                <div style={{ height: "100%" }}>
-                    {files && (
-                        <List dense={true} className={classes.files_list}>
-                            {files.map((file, index) => {
-                                let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
-                                let formatedDate = moment(date).format("lll");
 
-                                return (
-                                    <React.Fragment key={index}>
-                                        <ListItem>
-                                            <ListItemAvatar>
-                                                <CloudCircle style={{ fontSize: 32 }} />
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={file.fileName}
-                                                secondary={`Shared since ${formatedDate}`}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                            <ListItemSecondaryAction>
-                                                <IconButton edge="end" aria-label="delete">
-                                                    <LinkIcon />
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                        <Divider />
-                                    </React.Fragment>
-                                );
-                            })}
-                        </List>
-                    )}
-                    {!files && (
-                        <Container maxWidth="sm" className={classes.files_list_placeholder}>
-                            <Typography variant="body1" className={classes.files_list_placeholder_text}>
-                                No file currently shared
-                            </Typography>
-                        </Container>
-                    )}
-                </div>
+                {files && (
+                    <List dense={true} className={classes.files_list}>
+                        {files.map((file, index) => {
+                            let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
+                            let formatedDate = moment(date).format("lll");
+
+                            return (
+                                <React.Fragment key={index}>
+                                    <ListItem>
+                                        <ListItemAvatar>
+                                            <CloudCircle style={{ fontSize: 32 }} />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={file.fileName}
+                                            secondary={`Shared since ${formatedDate}`}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge="end" aria-label="delete">
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge="end" aria-label="delete">
+                                                <LinkIcon />
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                    <Divider />
+                                </React.Fragment>
+                            );
+                        })}
+                    </List>
+                )}
+                {!files && (
+                    <Container maxWidth="sm" className={classes.files_list_placeholder}>
+                        <Typography variant="body1" className={classes.files_list_placeholder_text}>
+                            No file currently shared
+                        </Typography>
+                    </Container>
+                )}
             </Grid>
         </Container>
     );

@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import logo from "./logo.svg";
-import "./Signin.css";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -91,7 +89,7 @@ function Signin({ dispatch }) {
                     </Typography>
 
                     <Typography align="center" className={classes.subtitle} component="h5" variant="h5">
-                        Share a file instantaneously and temporarily with someone!
+                        Share a file temporarily with someone!
                     </Typography>
                     <CloudCircle className={classes.logo} />
                     <hr />
