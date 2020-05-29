@@ -9,7 +9,7 @@ import { makeStyles } from "@material-ui/core/styles";
 function Footer({ dispatch }) {
     const useStyles = makeStyles((theme) => ({
         footer: {
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.action.hover,
             padding: theme.spacing(2),
             display: "block",
             left: "0",
@@ -28,7 +28,7 @@ function Footer({ dispatch }) {
                 FileRing
                 <small>
                     &nbsp;is propulsed by{" "}
-                    <Link color="info.main" href="https://www.openrainbow.com/">
+                    <Link color="primary" href="https://www.openrainbow.com/">
                         Rainbow
                     </Link>
                 </small>

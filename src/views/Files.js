@@ -8,12 +8,12 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Divider from "@material-ui/core/Divider";
 
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import Avatar from "@material-ui/core/Avatar";
+import Fab from "@material-ui/core/Fab";
 import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
 import DeleteIcon from "@material-ui/icons/Delete";
 import LinkIcon from "@material-ui/icons/Link";
@@ -26,12 +26,15 @@ import ShareContext from "../contexts/shareContext";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import { getQuota, getSharedFilesFromBubble, getOrCreateRoom } from "../modules/SDK";
 import { SET_BUBBLE } from "../actions/shareAction";
+import SharePopup from "./SharePopup";
 
 function Files({ dispatch }) {
     const [quota, setQuota] = useState(0);
     const [files, setFiles] = useState([]);
     const appState = useContext(ConnectionContext);
     const shareState = useContext(ShareContext);
+    const [file, setFile] = useState();
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         const fetchQuota = async () => {
@@ -91,6 +94,15 @@ function Files({ dispatch }) {
 
     const classes = useStyles();
 
+    function handleClick(file) {
+        setFile(file);
+        setOpen(true);
+    }
+
+    function handleClose() {
+        setOpen(false);
+    }
+
     return (
         <Container className={classes.cardContainer} maxWidth="md">
             <Container className={classes.files_quota}>
@@ -106,29 +118,30 @@ function Files({ dispatch }) {
                 </div>
 
                 {files && (
-                    <List dense={true} className={classes.files_list}>
+                    <List className={classes.files_list} component="nav">
                         {files.map((file, index) => {
                             let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
                             let formatedDate = moment(date).format("lll");
 
                             return (
                                 <React.Fragment key={index}>
-                                    <ListItem>
-                                        <ListItemAvatar>
+                                    <ListItem
+                                        button
+                                        onClick={() => {
+                                            handleClick(file);
+                                        }}
+                                    >
+                                        <ListItemIcon>
                                             <CloudCircle style={{ fontSize: 32 }} />
-                                        </ListItemAvatar>
+                                        </ListItemIcon>
                                         <ListItemText
                                             primary={file.fileName}
                                             secondary={`Shared since ${formatedDate}`}
                                         />
+
                                         <ListItemSecondaryAction>
                                             <IconButton edge="end" aria-label="delete">
                                                 <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
-                                        <ListItemSecondaryAction>
-                                            <IconButton edge="end" aria-label="delete">
-                                                <LinkIcon />
                                             </IconButton>
                                         </ListItemSecondaryAction>
                                     </ListItem>
@@ -146,6 +159,7 @@ function Files({ dispatch }) {
                     </Container>
                 )}
             </Grid>
+            <SharePopup open={open} file={file} onClose={handleClose} />
         </Container>
     );
 }

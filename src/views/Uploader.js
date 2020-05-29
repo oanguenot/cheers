@@ -1,4 +1,6 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
+import moment from "moment";
+
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
@@ -6,7 +8,9 @@ import Typography from "@material-ui/core/Typography";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import { requestId } from "../modules/Config";
+import { requestId, config } from "../modules/Config";
+
+import { generateLink } from "../modules/Link";
 import {
     getConversationFromContactId,
     shareFileInConversation,
@@ -46,15 +50,24 @@ function Uploader({ dispatch }) {
 
     useEffect(() => {
         const uploadFile = async (fileToShare, bubble) => {
-            const id = await requestId(1000);
+            const ttl = config().guest_ttl;
 
-            const conversation = await getConversationFromContactId(id);
+            // Generate GuestID
+            const guestId = await requestId(ttl);
+
+            const expirationDate = moment(Date.now()).add(86400, "seconds").toDate();
+
+            const conversation = await getConversationFromContactId(guestId);
 
             const message = await shareFileInConversation(fileToShare, conversation);
 
+            const fileId = message.fileId;
+
+            const publicLink = await generateLink(guestId, fileId);
+
             await closeOpenedConversation(conversation);
 
-            const updatedbubble = await updateBubbleCustomData(message, bubble);
+            const updatedbubble = await updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
 
             dispatch({ type: SET_BUBBLE, payload: { bubble: updatedbubble } });
         };

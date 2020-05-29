@@ -1,13 +1,12 @@
 import axios from "axios";
 
-console.log("rebooted");
-
 let _config = {
     app_id: "",
     host: "",
     rainbow_host: "",
     oauth_redirect_uri: "",
     oauth_state: "",
+    guest_ttl: 0,
 };
 
 export const loadConfigFromServer = async () => {

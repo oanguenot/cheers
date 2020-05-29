@@ -7,6 +7,7 @@ module.exports = async (req, res) => {
         rainbow_host: process.env.RAINBOW_HOST,
         oauth_redirect_uri: process.env.RAINBOW_REDIRECT_URI,
         oauth_state: process.env.RAINBOW_OAUTH_STATE,
+        guest_ttl: parseInt(process.env.RAINBOW_GUEST_TTL),
     };
 
     switch (req.method) {

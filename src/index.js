@@ -1,9 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./index.css";
-import AppRouter from "./views/Router";
-import * as serviceWorker from "./serviceWorker";
 import moment from "moment";
+import "./index.css";
+
+import * as serviceWorker from "./serviceWorker";
+
+import ErrorBoundary from "./views/ErrorBoundary";
+import { initializeTracker } from "../src/modules/Tracking";
+import AppRouter from "./views/Router";
 
 const load = () => {
     let lang = navigator.language || navigator.userLanguage || "en-US";
@@ -23,9 +27,14 @@ if (document.readyState !== "complete") {
     load();
 }
 
+//Initialize Tracker
+initializeTracker();
+
 ReactDOM.render(
     <React.StrictMode>
-        <AppRouter />
+        <ErrorBoundary>
+            <AppRouter />
+        </ErrorBoundary>
     </React.StrictMode>,
     document.getElementById("root")
 );

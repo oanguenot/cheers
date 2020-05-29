@@ -43,7 +43,7 @@ module.exports = async (req, res) => {
             console.log("SERVER GET");
             res.writeHead("301", {
                 location: `${vercel_url}/signed?access_token=${oauth.access_token}&access_type=oauth`,
-            }).end("coucou");
+            }).end();
             break;
         case "POST":
             console.log("SERVER POST");

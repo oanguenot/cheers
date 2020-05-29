@@ -18,6 +18,8 @@ import Copyright from "./Copyright";
 import { signinWithOauth } from "../modules/Oauth";
 import { SWITCH_TO_DISCONNECTED } from "../actions/connectionAction";
 
+import { generateLink } from "../modules/Link";
+
 function Signin({ dispatch }) {
     useEffect(() => {
         dispatch({ type: SWITCH_TO_DISCONNECTED, payload: {} });
@@ -74,6 +76,14 @@ function Signin({ dispatch }) {
             color: theme.palette.grey[800],
         },
     }));
+
+    useEffect(() => {
+        const test = async () => {
+            const publicLink = await generateLink("123123234234234", "qsdqdqqsdqsqd234234");
+            console.log(">>>publicLink", publicLink);
+        };
+        test();
+    }, []);
 
     const classes = useStyles();
 

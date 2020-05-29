@@ -22,4 +22,5 @@ code {
 
 main {
     height: calc(100% - 164px);
+    background-color: #fff;
 }

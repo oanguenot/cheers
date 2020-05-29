@@ -162,7 +162,7 @@ export const closeOpenedConversation = async (conversation) => {
     }
 };
 
-export const updateBubbleCustomData = async (message, bubble) => {
+export const updateBubbleCustomData = async (fileId, guestId, publicURL, bubble) => {
     try {
         let customData = bubble.customData;
 
@@ -170,7 +170,7 @@ export const updateBubbleCustomData = async (message, bubble) => {
             customData.files = [];
         }
 
-        customData.files.push(message.fileId);
+        customData.files.push(fileId);
 
         return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
     } catch (err) {
