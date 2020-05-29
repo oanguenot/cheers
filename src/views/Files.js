@@ -117,7 +117,7 @@ function Files({ dispatch }) {
                     <Typography variant="h6">Files shared</Typography>
                 </div>
 
-                {files && (
+                {files.length > 0 && (
                     <List className={classes.files_list} component="nav">
                         {files.map((file, index) => {
                             let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
@@ -151,7 +151,7 @@ function Files({ dispatch }) {
                         })}
                     </List>
                 )}
-                {!files && (
+                {files.length === 0 && (
                     <Container maxWidth="sm" className={classes.files_list_placeholder}>
                         <Typography variant="body1" className={classes.files_list_placeholder_text}>
                             No file currently shared

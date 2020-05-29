@@ -162,15 +162,17 @@ export const closeOpenedConversation = async (conversation) => {
     }
 };
 
-export const updateBubbleCustomData = async (fileId, guestId, publicURL, bubble) => {
+export const updateBubbleCustomData = async (fileId, guestId, publicURL, expirationDate, bubble) => {
     try {
         let customData = bubble.customData;
 
-        if (!customData.files) {
-            customData.files = [];
-        }
+        const file = {
+            guestId,
+            publicURL,
+            expirationDate,
+        };
 
-        customData.files.push(fileId);
+        customData[fileId] = file;
 
         return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
     } catch (err) {
@@ -182,18 +184,16 @@ export const getSharedFilesFromBubble = async (bubble) => {
     try {
         const customData = bubble.customData;
 
-        const fileIdShared = customData.files || [];
+        const filesList = Object.keys(bubble.customData);
+
+        if (filesList.length === 0) {
+            return [];
+        }
 
         let files = await sdk.fileStorage.getAllFilesSent();
 
-        console.log(">>>FILES", files);
-
         files = files.filter((file) => {
-            if (fileIdShared.length === 0) {
-                return false;
-            }
-
-            return fileIdShared.includes(file.id);
+            return filesList.includes(file.id);
         });
 
         console.log(">>>INCLUDES", files);

@@ -77,25 +77,16 @@ function Signin({ dispatch }) {
         },
     }));
 
-    useEffect(() => {
-        const test = async () => {
-            const publicLink = await generateLink("123123234234234", "qsdqdqqsdqsqd234234");
-            console.log(">>>publicLink", publicLink);
-        };
-        test();
-    }, []);
-
     const classes = useStyles();
 
     return (
         <Grid container component="main" className={classes.root}>
             <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+            <Grid item xs={false} sm={4} md={8} className={classes.image} />
+            <Grid item xs={12} sm={8} md={4} component={Paper} elevation={6} square>
                 <form className={classes.paper}>
                     <Typography component="h1" variant="h1" className={classes.title}>
-                        FileRing&nbsp;
-                        <img className={classes.rainbow} src="./rainbow.png" alt="rainbow" />
+                        FileRing
                     </Typography>
 
                     <Typography align="center" className={classes.subtitle} component="h5" variant="h5">

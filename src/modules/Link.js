@@ -1,6 +1,8 @@
 import axios from "axios";
 
 export const generateLink = async (guestId, fileId) => {
+    let publicURL;
+
     await axios
         .post("/api/link", {
             guestId: guestId,
@@ -8,12 +10,14 @@ export const generateLink = async (guestId, fileId) => {
         })
         .then(function (response) {
             // handle success
-            console.log("RESPONSE", response);
-            return {};
+
+            publicURL = response.data.publicUrl;
+            console.log("RESPONSE", publicURL);
         })
         .catch(function (error) {
             // handle error
             console.log(error);
-            return;
         });
+
+    return publicURL;
 };
