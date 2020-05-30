@@ -182,8 +182,6 @@ export const updateBubbleCustomData = async (fileId, guestId, publicURL, expirat
 
 export const getSharedFilesFromBubble = async (bubble) => {
     try {
-        const customData = bubble.customData;
-
         const filesList = Object.keys(bubble.customData);
 
         if (filesList.length === 0) {
@@ -196,9 +194,15 @@ export const getSharedFilesFromBubble = async (bubble) => {
             return filesList.includes(file.id);
         });
 
-        console.log(">>>INCLUDES", files);
+        const filesWithData = files.map((file) => {
+            let data = bubble.customData[file.id];
+            data.file = file;
+            return data;
+        });
 
-        return files;
+        console.log(">>>filesWithData", filesWithData);
+
+        return filesWithData;
     } catch (err) {
         console.error("Can't get files - error", err);
     }

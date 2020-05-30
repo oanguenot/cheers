@@ -10,9 +10,7 @@ export const generateLink = async (guestId, fileId) => {
         })
         .then(function (response) {
             // handle success
-
             publicURL = response.data.publicUrl;
-            console.log("RESPONSE", publicURL);
         })
         .catch(function (error) {
             // handle error

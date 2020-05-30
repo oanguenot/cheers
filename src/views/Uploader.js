@@ -52,24 +52,26 @@ function Uploader({ dispatch }) {
         const uploadFile = async (fileToShare, bubble) => {
             const ttl = config().guest_ttl;
 
-            // Generate GuestID
-            const guestId = await requestId(ttl);
+            try {
+                // Generate GuestID
+                const guestId = await requestId(ttl);
 
-            const expirationDate = moment(Date.now()).add(86400, "seconds").toDate();
+                const expirationDate = moment(Date.now()).add(86400, "seconds").toDate();
 
-            const conversation = await getConversationFromContactId(guestId);
+                const conversation = await getConversationFromContactId(guestId);
 
-            const message = await shareFileInConversation(fileToShare, conversation);
+                const message = await shareFileInConversation(fileToShare, conversation);
 
-            const fileId = message.fileId;
+                const fileId = message.fileId;
 
-            const publicLink = await generateLink(guestId, fileId);
+                const publicLink = await generateLink(guestId, fileId);
 
-            await closeOpenedConversation(conversation);
+                await closeOpenedConversation(conversation);
 
-            const updatedbubble = await updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
+                const updatedbubble = await updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
 
-            dispatch({ type: SET_BUBBLE, payload: { bubble: updatedbubble } });
+                dispatch({ type: SET_BUBBLE, payload: { bubble: updatedbubble } });
+            } catch (err) {}
         };
 
         if (file) {

@@ -13,10 +13,8 @@ import Divider from "@material-ui/core/Divider";
 
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import Fab from "@material-ui/core/Fab";
 import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
 import DeleteIcon from "@material-ui/icons/Delete";
-import LinkIcon from "@material-ui/icons/Link";
 
 import IconButton from "@material-ui/core/IconButton";
 
@@ -119,31 +117,39 @@ function Files({ dispatch }) {
 
                 {files.length > 0 && (
                     <List className={classes.files_list} component="nav">
-                        {files.map((file, index) => {
-                            let date = file.uploadedDate ? new Date(file.uploadedDate) : Date.now();
-                            let formatedDate = moment(date).format("lll");
+                        {files.map((fileWithMetadata, index) => {
+                            let file = fileWithMetadata.file;
+                            let formatedDate = moment(fileWithMetadata.expirationDate).calendar();
+
+                            let hasExpired = false;
+                            let message = `Shared until ${formatedDate}`;
+                            if (moment().isAfter(moment(fileWithMetadata.expirationDate))) {
+                                message = `Expired since ${formatedDate}`;
+                                hasExpired = true;
+                            }
 
                             return (
                                 <React.Fragment key={index}>
                                     <ListItem
                                         button
                                         onClick={() => {
-                                            handleClick(file);
+                                            handleClick(fileWithMetadata);
                                         }}
                                     >
                                         <ListItemIcon>
-                                            <CloudCircle style={{ fontSize: 32 }} />
+                                            <CloudCircle style={{ fontSize: 36 }} />
                                         </ListItemIcon>
                                         <ListItemText
-                                            primary={file.fileName}
-                                            secondary={`Shared since ${formatedDate}`}
+                                            primary={<Typography variant="h6">{file.fileName}</Typography>}
+                                            secondary={
+                                                <Typography
+                                                    variant="body1"
+                                                    style={{ color: hasExpired ? "#ff6f00" : "#cccccc" }}
+                                                >
+                                                    {message}
+                                                </Typography>
+                                            }
                                         />
-
-                                        <ListItemSecondaryAction>
-                                            <IconButton edge="end" aria-label="delete">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </ListItemSecondaryAction>
                                     </ListItem>
                                     <Divider />
                                 </React.Fragment>
@@ -159,7 +165,7 @@ function Files({ dispatch }) {
                     </Container>
                 )}
             </Grid>
-            <SharePopup open={open} file={file} onClose={handleClose} />
+            <SharePopup open={open} fileData={file} onClose={handleClose} />
         </Container>
     );
 }
