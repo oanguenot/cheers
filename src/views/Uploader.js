@@ -65,13 +65,19 @@ function Uploader({ dispatch }) {
                 const fileId = message.fileId;
 
                 const publicLink = await generateLink(guestId, fileId);
+                console.log("4. public link", publicLink);
 
                 await closeOpenedConversation(conversation);
+                console.log("5. conversation closed");
 
                 const updatedbubble = await updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
 
+                console.log("6. updated bubble", updatedbubble);
+
                 dispatch({ type: SET_BUBBLE, payload: { bubble: updatedbubble } });
-            } catch (err) {}
+            } catch (err) {
+                console.error("Can't upload file");
+            }
         };
 
         if (file) {

@@ -172,7 +172,11 @@ export const updateBubbleCustomData = async (fileId, guestId, publicURL, expirat
             expirationDate,
         };
 
+        console.log("UP.file", file);
+
         customData[fileId] = file;
+
+        console.log("UP.custo", customData);
 
         return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
     } catch (err) {
