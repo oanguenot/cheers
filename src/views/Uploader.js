@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useContext } from "react";
-import moment from "moment";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -8,20 +7,14 @@ import Typography from "@material-ui/core/Typography";
 
 import { makeStyles } from "@material-ui/core/styles";
 
-import { requestId, config } from "../modules/Config";
-
-import { generateLink } from "../modules/Link";
-import {
-    getConversationFromContactId,
-    shareFileInConversation,
-    closeOpenedConversation,
-    updateBubbleCustomData,
-} from "../modules/SDK";
+import { config } from "../modules/Config";
 
 import ShareContext from "../contexts/shareContext";
 
-import { SET_BUBBLE } from "../actions/shareAction";
+import { uploadFile } from "../actions/shareAction";
+
 import { LinearProgress } from "@material-ui/core";
+import ConnectionContext from "../contexts/connectionContext";
 
 function Uploader({ dispatch }) {
     const inputFile = useRef();
@@ -29,6 +22,7 @@ function Uploader({ dispatch }) {
     const [file, setFile] = useState(null);
 
     const shareState = useContext(ShareContext);
+    const appState = useContext(ConnectionContext);
 
     const useStyles = makeStyles((theme) => ({
         heroButtons: {
@@ -49,39 +43,8 @@ function Uploader({ dispatch }) {
     }, []);
 
     useEffect(() => {
-        const uploadFile = async (fileToShare, bubble) => {
-            const ttl = config().guest_ttl;
-
-            try {
-                // Generate GuestID
-                const guestId = await requestId(ttl);
-
-                const expirationDate = moment(Date.now()).add(86400, "seconds").toDate();
-
-                const conversation = await getConversationFromContactId(guestId);
-
-                const message = await shareFileInConversation(fileToShare, conversation);
-
-                const fileId = message.fileId;
-
-                const publicLink = await generateLink(guestId, fileId);
-                console.log("4. public link", publicLink);
-
-                await closeOpenedConversation(conversation);
-                console.log("5. conversation closed");
-
-                const updatedbubble = await updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
-
-                console.log("6. updated bubble", updatedbubble);
-
-                dispatch({ type: SET_BUBBLE, payload: { bubble: updatedbubble } });
-            } catch (err) {
-                console.error("Can't upload file");
-            }
-        };
-
         if (file) {
-            uploadFile(file, shareState.bubble);
+            uploadFile(file, config().guest_ttl, appState.bubble, dispatch);
         }
     }, [file]);
 

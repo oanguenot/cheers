@@ -12,7 +12,6 @@ import Footer from "./Footer";
 import InProgress from "./InProgress";
 import Header from "./Header";
 
-import { shareDispatcher } from "../modules/SDK";
 import ShareContext from "../contexts/shareContext";
 
 import { shareReducer, initialShareState } from "../reducers/shareReducer";
@@ -42,8 +41,6 @@ function Signed({ dispatch }) {
 
     const classes = useStyles();
 
-    shareDispatcher(dispatcher);
-
     return (
         <React.Fragment>
             {appState.connectionState === "error" && <Redirect to="/" />}
@@ -54,8 +51,8 @@ function Signed({ dispatch }) {
                 {appState.connectionState === "connected" && (
                     <ShareContext.Provider value={shareState}>
                         <div className={classes.connected_area}>
-                            <Uploader dispatch={dispatch} />
-                            <Files dispatch={dispatch} />
+                            <Uploader dispatch={dispatcher} />
+                            <Files />
                         </div>
                     </ShareContext.Provider>
                 )}

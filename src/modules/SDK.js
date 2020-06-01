@@ -1,15 +1,9 @@
 import { loadConfigFromServer, isValidConfig } from "./Config";
-import { UPDATE_PROGRESS, UPDATE_COMPLETED, UPDATE_ERROR } from "../actions/shareAction";
 
 let sdk = window.rainbowSDK.default;
 
 let _config = null;
 let _token = "";
-let _shareDispatch = null;
-
-export const shareDispatcher = (dispatch) => {
-    _shareDispatch = dispatch;
-};
 
 export const connectWithToken = async (token) => {
     return new Promise((resolve, reject) => {
@@ -88,33 +82,80 @@ export const getQuota = async () => {
     }
 };
 
-export const getConversationFromContactId = async (id) => {
-    try {
-        const contact = await sdk.contacts.searchById(id);
-        console.log("CONTACT:", contact);
-        if (!contact) {
-            console.error("Can't get conversation - no contact found");
-            return;
-        }
-        const conversation = sdk.conversations.openConversationForContact(contact);
-        if (!conversation) {
-            console.error("Can't get conversation - no conversation");
-        }
-        return conversation;
-    } catch (err) {
-        console.error("Can't get conversation - error", err);
-        return;
-    }
+export const getConversationFromContactId = (id) => {
+    return new Promise((resolve, reject) => {
+        sdk.contacts
+            .searchById(id)
+            .then((guest) => {
+                if (!guest) {
+                    console.error("[sdk] guest not found");
+                    reject({ reason: "Can't find guest" });
+                    return;
+                }
+                console.log("[sdk] guest found by id", guest);
+
+                return sdk.conversations.openConversationForContact(guest);
+            })
+            .then((conversation) => {
+                if (!conversation) {
+                    console.error("[sdk] can't get conversation - no conversation");
+                    reject({ reason: "Can't get conversation" });
+                    return;
+                }
+
+                resolve(conversation);
+            })
+            .catch((err) => {
+                console.error("[sdk] can't get conversation from guest id", err);
+                reject({ reason: "Can't get conversation" });
+            });
+    });
 };
 
-export const shareFileInConversation = async (file, conversation) => {
-    try {
-        const message = await sdk.fileStorage.uploadFileToConversation(conversation, file);
-        return message;
-    } catch (err) {
-        console.error("Can't share file - error", err);
-        return;
-    }
+export const shareFileInConversation = async (file, conversation, onUploadProgress, onUploadEnded, onUploadError) => {
+    const onChunk = (event) => {
+        console.log("[sdk] upload progress", event.detail);
+        onUploadProgress(event.detail.id, event.detail.chunkPerformedPercent || 5);
+    };
+
+    const onSuccess = (event) => {
+        console.log("[sdk] upload successfully", event.detail);
+        onUploadEnded(event.detail.id);
+    };
+
+    const onError = (event) => {
+        console.log("[sdk] upload error", event.detail);
+        onUploadError(event.detail.id);
+    };
+
+    const resetListener = () => {
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, onChunk);
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, onSuccess);
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, onError);
+    };
+
+    const addListener = () => {
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, onChunk);
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, onSuccess);
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, onError);
+    };
+
+    return new Promise((resolve, reject) => {
+        addListener();
+
+        sdk.fileStorage
+            .uploadFileToConversation(conversation, file)
+            .then((message) => {
+                console.log("[sdk] file shared", message);
+                resetListener();
+                resolve(message);
+            })
+            .catch((err) => {
+                console.error("[sdk] can't share file - error", err);
+                resetListener();
+                reject();
+            });
+    });
 };
 
 export const closeOpenedConversation = async (conversation) => {
@@ -125,8 +166,8 @@ export const closeOpenedConversation = async (conversation) => {
     }
 };
 
-export const updateBubbleCustomData = async (fileId, guestId, publicURL, expirationDate, bubble) => {
-    try {
+export const updateBubbleCustomData = (fileId, guestId, publicURL, expirationDate, bubble) => {
+    return new Promise((resolve, reject) => {
         let customData = bubble.customData;
 
         const file = {
@@ -135,16 +176,18 @@ export const updateBubbleCustomData = async (fileId, guestId, publicURL, expirat
             expirationDate,
         };
 
-        console.log("UP.file", file);
-
         customData[fileId] = file;
 
-        console.log("UP.custo", customData);
-
-        return await sdk.bubbles.updateCustomDataForBubble(customData, bubble);
-    } catch (err) {
-        console.error("Can't update custom data - error", err);
-    }
+        sdk.bubbles
+            .updateCustomDataForBubble(customData, bubble)
+            .then((updatedBubble) => {
+                console.log("[sdk] bubble updated", updatedBubble);
+                resolve(bubble);
+            })
+            .catch((err) => {
+                console.error("[sdk] can't update custom data", err);
+            });
+    });
 };
 
 export const getSharedFilesFromBubble = async (bubble) => {
@@ -206,22 +249,4 @@ document.addEventListener(sdk.connection.RAINBOW_ONSIGNED, () => {
 
 document.addEventListener(sdk.connection.RAINBOW_ONCONNECTIONSTATECHANGED, (state) => {
     console.log("[sdk] progress", state);
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, (event) => {
-    console.log("[sdk] upload progress", event.detail);
-    _shareDispatch({
-        type: UPDATE_PROGRESS,
-        payload: { id: event.detail.id, progress: event.detail.chunkPerformedPercent || 5 },
-    });
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, (event) => {
-    console.log("[sdk] upload successfully", event.detail);
-    _shareDispatch({ type: UPDATE_COMPLETED, payload: { id: event.detail.id } });
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, (event) => {
-    console.log("[sdk] upload error", event.detail);
-    _shareDispatch({ type: UPDATE_ERROR, payload: { id: event.detail.id } });
 });
