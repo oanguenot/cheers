@@ -1,112 +1,75 @@
-import { loadConfigFromServer } from "./Config";
-import {
-    SWITCH_TO_DISCONNECTED,
-    SWITCH_TO_CONNECTED,
-    SWITCH_TO_ERROR,
-    SWITCH_TO_INPROGRESS,
-    SWITCH_TO_ABORTED,
-} from "../actions/connectionAction";
+import { loadConfigFromServer, isValidConfig } from "./Config";
 import { UPDATE_PROGRESS, UPDATE_COMPLETED, UPDATE_ERROR } from "../actions/shareAction";
 
 let sdk = window.rainbowSDK.default;
 
 let _config = null;
 let _token = "";
-let _dispatch = null;
 let _shareDispatch = null;
-
-const signinOnRainbow = async (token, host) => {
-    try {
-        const result = await sdk.connection.signinOnRainbowHostedWithToken(_token, _config.rainbow_host);
-        console.log("[sdk] signed successfully", result);
-        _dispatch({ type: SWITCH_TO_CONNECTED, payload: {} });
-    } catch (err) {
-        console.error("[sdk] can't sign to Rainbow", err);
-        _dispatch({ type: SWITCH_TO_ERROR, payload: { error: err } });
-    }
-};
-
-document.addEventListener(sdk.RAINBOW_ONREADY, () => {
-    console.log("[sdk] ready");
-    signinOnRainbow(_token, _config.rainbow_host);
-});
-
-document.addEventListener(sdk.RAINBOW_ONLOADED, () => {
-    console.log("[sdk] loaded");
-
-    sdk.initialize()
-        .then(() => {
-            console.log("[sdk] initialized");
-        })
-        .catch((err) => {
-            console.error("[sdk] can't initialize - Rainbow SDK error", err);
-        });
-});
-
-document.addEventListener(sdk.connection.RAINBOW_ONSIGNED, () => {
-    console.log("[sdk] signed");
-});
-
-document.addEventListener(sdk.connection.RAINBOW_ONCONNECTIONSTATECHANGED, (state) => {
-    console.log("[sdk] progress", state);
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, (event) => {
-    console.log("[sdk] upload progress", event.detail);
-    _shareDispatch({
-        type: UPDATE_PROGRESS,
-        payload: { id: event.detail.id, progress: event.detail.chunkPerformedPercent || 5 },
-    });
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, (event) => {
-    console.log("[sdk] upload successfully", event.detail);
-    _shareDispatch({ type: UPDATE_COMPLETED, payload: { id: event.detail.id } });
-});
-
-document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, (event) => {
-    console.log("[sdk] upload error", event.detail);
-    _shareDispatch({ type: UPDATE_ERROR, payload: { id: event.detail.id } });
-});
-
-export const initialize = async () => {
-    sdk.start();
-    sdk.load();
-};
-
-export const dispatcher = (dispatch) => {
-    _dispatch = dispatch;
-};
 
 export const shareDispatcher = (dispatch) => {
     _shareDispatch = dispatch;
 };
 
 export const connectWithToken = async (token) => {
-    if (!sdk) {
-        console.error("[sdk] can't signin - Rainbow SDK not loaded correctly!");
-        _dispatch({ type: SWITCH_TO_ABORTED, payload: { reason: "sdk" } });
-        return;
-    }
+    return new Promise((resolve, reject) => {
+        document.addEventListener(sdk.RAINBOW_ONREADY, () => {
+            console.log("[sdk] ready");
+            sdk.connection
+                .signinOnRainbowHostedWithToken(_token, _config.rainbow_host)
+                .then((result) => {
+                    console.log("[sdk] signed successfully", result);
+                    resolve();
+                })
+                .catch((err) => {
+                    console.error("[sdk] can't sign to Rainbow", err);
+                    reject({ reason: "can't login" });
+                });
+        });
 
-    if (!token) {
-        console.error("[sdk] can't signin - no valid token!");
-        _dispatch({ type: SWITCH_TO_ABORTED, payload: { reason: "token" } });
-        return;
-    }
+        document.addEventListener(sdk.RAINBOW_ONLOADED, () => {
+            console.log("[sdk] loaded");
 
-    _token = token;
-    _config = await loadConfigFromServer();
+            sdk.initialize()
+                .then(() => {
+                    console.log("[sdk] initialized");
+                })
+                .catch((err) => {
+                    console.error("[sdk] can't initialize - Rainbow SDK error", err);
+                    reject({ reason: "No valid SDK" });
+                });
+        });
 
-    if (!_config) {
-        console.error("[sdk] can't signin - no valid config!");
-        _dispatch({ type: SWITCH_TO_ABORTED, payload: { reason: "config" } });
-        return;
-    }
+        if (!sdk) {
+            console.error("[sdk] can't signin - Rainbow SDK not loaded correctly!");
+            reject({ reason: "No SDK loaded" });
+            return;
+        }
 
-    _dispatch({ type: SWITCH_TO_INPROGRESS, payload: {} });
+        if (!token) {
+            console.error("[sdk] can't signin - no valid token!");
+            reject({ reason: "No valid token" });
+            return;
+        }
 
-    initialize();
+        _token = token;
+        loadConfigFromServer()
+            .then((config) => {
+                if (!isValidConfig()) {
+                    console.error("[sdk] can't signin - no valid config!");
+                    reject({ reason: "No valid config" });
+                    return;
+                }
+                _config = config;
+                sdk.start();
+                sdk.load();
+            })
+            .catch((err) => {
+                console.error("[sdk] can't signin - can't get config!");
+                reject({ reason: "No config" });
+                return;
+            });
+    });
 };
 
 export const getQuota = async () => {
@@ -213,22 +176,52 @@ export const getSharedFilesFromBubble = async (bubble) => {
 };
 
 export const getOrCreateRoom = async () => {
-    try {
-        let bubble = await sdk.bubbles.getAllBubbles().filter((bubble) => {
+    return new Promise((resolve, reject) => {
+        let bubble = sdk.bubbles.getAllBubbles().filter((bubble) => {
             return bubble.name === "Sharing" && bubble.desc === "Created by Sharing application - do not remove";
         });
 
         if (bubble.length === 1) {
-            console.log("BUBBLE1", bubble[0]);
-            return bubble[0];
+            console.log("[sdk] bubble found", bubble[0]);
+            resolve(bubble[0]);
         }
 
-        bubble = await sdk.bubbles.createBubble("Sharing", "Created by Sharing application - do not remove");
-
-        console.log("BUBBLE", bubble);
-
-        return bubble;
-    } catch (err) {
-        console.error("can't create room - error", err);
-    }
+        sdk.bubbles
+            .createBubble("Sharing", "Created by Sharing application - do not remove")
+            .then((bubble) => {
+                resolve(bubble);
+            })
+            .catch((err) => {
+                console.log("[sdk] can't create bubble", err);
+                reject({ reason: "can't create bubble" });
+            });
+    });
 };
+
+/* --------------------------- SDK Listeners ----------------------------------- */
+
+document.addEventListener(sdk.connection.RAINBOW_ONSIGNED, () => {
+    console.log("[sdk] signed");
+});
+
+document.addEventListener(sdk.connection.RAINBOW_ONCONNECTIONSTATECHANGED, (state) => {
+    console.log("[sdk] progress", state);
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, (event) => {
+    console.log("[sdk] upload progress", event.detail);
+    _shareDispatch({
+        type: UPDATE_PROGRESS,
+        payload: { id: event.detail.id, progress: event.detail.chunkPerformedPercent || 5 },
+    });
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED, (event) => {
+    console.log("[sdk] upload successfully", event.detail);
+    _shareDispatch({ type: UPDATE_COMPLETED, payload: { id: event.detail.id } });
+});
+
+document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEUPLOADED_ERROR, (event) => {
+    console.log("[sdk] upload error", event.detail);
+    _shareDispatch({ type: UPDATE_ERROR, payload: { id: event.detail.id } });
+});

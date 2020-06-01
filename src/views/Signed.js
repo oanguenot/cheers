@@ -1,8 +1,6 @@
 import React, { useEffect, useContext, useReducer } from "react";
 import { useLocation, Redirect } from "react-router-dom";
 
-import { connectWithToken } from "../modules/SDK";
-
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -18,11 +16,12 @@ import { shareDispatcher } from "../modules/SDK";
 import ShareContext from "../contexts/shareContext";
 
 import { shareReducer, initialShareState } from "../reducers/shareReducer";
+import { signinWithOAuthToken } from "../actions/connectionAction";
 
-function Signed() {
+function Signed({ dispatch }) {
     let location = useLocation();
 
-    const [shareState, dispatch] = useReducer(shareReducer, initialShareState);
+    const [shareState, dispatcher] = useReducer(shareReducer, initialShareState);
 
     let query = new URLSearchParams(location.search);
     const access_token = query.get("access_token");
@@ -30,7 +29,7 @@ function Signed() {
     const appState = useContext(ConnectionContext);
 
     useEffect(() => {
-        connectWithToken(access_token);
+        signinWithOAuthToken(access_token, dispatch);
     }, []);
 
     useEffect(() => {}, [appState]);
@@ -43,7 +42,7 @@ function Signed() {
 
     const classes = useStyles();
 
-    shareDispatcher(dispatch);
+    shareDispatcher(dispatcher);
 
     return (
         <React.Fragment>

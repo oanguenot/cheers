@@ -16,7 +16,7 @@ export const UPLOAD_STATE = {
 };
 
 const initialShareState = {
-    bubble: null,
+    files: [],
     progress: 0,
     uploadInProgress: false,
     lastFilesUpdate: new Date(),
@@ -24,9 +24,8 @@ const initialShareState = {
 };
 
 const shareReducer = (state = initialShareState, action) => {
+    console.log("[share state] --> ", action.type);
     switch (action.type) {
-        case SET_BUBBLE:
-            return { ...state, bubble: action.payload.bubble, lastFilesUpdate: new Date() };
         case UPDATE_PROGRESS:
             return {
                 ...state,

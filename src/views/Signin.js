@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
@@ -16,15 +16,8 @@ import { makeStyles } from "@material-ui/core/styles";
 import Copyright from "./Copyright";
 
 import { signinWithOauth } from "../modules/Oauth";
-import { SWITCH_TO_DISCONNECTED } from "../actions/connectionAction";
 
-import { generateLink } from "../modules/Link";
-
-function Signin({ dispatch }) {
-    useEffect(() => {
-        dispatch({ type: SWITCH_TO_DISCONNECTED, payload: {} });
-    }, []);
-
+function Signin() {
     const init = async (e) => {
         e.stopPropagation();
         signinWithOauth();

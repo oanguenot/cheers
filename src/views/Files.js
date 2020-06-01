@@ -5,32 +5,23 @@ import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
-
+import LinearProgress from "@material-ui/core/LinearProgress";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import Divider from "@material-ui/core/Divider";
-
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
-import DeleteIcon from "@material-ui/icons/Delete";
-
-import IconButton from "@material-ui/core/IconButton";
 
 import ConnectionContext from "../contexts/connectionContext";
-import ShareContext from "../contexts/shareContext";
 
-import LinearProgress from "@material-ui/core/LinearProgress";
-import { getQuota, getSharedFilesFromBubble, getOrCreateRoom } from "../modules/SDK";
-import { SET_BUBBLE } from "../actions/shareAction";
+import { getQuota, getSharedFilesFromBubble } from "../modules/SDK";
 import SharePopup from "./SharePopup";
 
 function Files({ dispatch }) {
     const [quota, setQuota] = useState(0);
     const [files, setFiles] = useState([]);
     const appState = useContext(ConnectionContext);
-    const shareState = useContext(ShareContext);
     const [file, setFile] = useState();
     const [open, setOpen] = useState(false);
 
@@ -44,25 +35,13 @@ function Files({ dispatch }) {
 
     useEffect(() => {
         const fetchFiles = async () => {
-            const bubble = await getOrCreateRoom();
-            dispatch({ type: SET_BUBBLE, payload: { bubble: bubble } });
-            const f = await getSharedFilesFromBubble(bubble);
+            const f = await getSharedFilesFromBubble(appState.bubble);
             setFiles(f);
         };
-        if (appState.connectionState === "connected") {
+        if (appState.connectionState === "connected" && appState.bubble) {
             fetchFiles();
         }
     }, [appState]);
-
-    useEffect(() => {
-        const fetchFiles = async () => {
-            const f = await getSharedFilesFromBubble(shareState.bubble);
-            setFiles(f);
-        };
-        if (appState.connectionState === "connected" && shareState.bubble) {
-            fetchFiles();
-        }
-    }, [shareState.lastFilesUpdate]);
 
     const useStyles = makeStyles((theme) => ({
         files_list_title: {},
