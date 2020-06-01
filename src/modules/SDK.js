@@ -158,34 +158,43 @@ export const shareFileInConversation = async (file, conversation, onUploadProgre
     });
 };
 
-export const closeOpenedConversation = async (conversation) => {
-    try {
-        await sdk.conversations.closeConversation(conversation);
-    } catch (err) {
-        console.error("Can't close conversation - error", err);
-    }
+export const closeOpenedConversation = (conversation) => {
+    return new Promise((resolve, reject) => {
+        sdk.conversations
+            .closeConversation(conversation)
+            .then(() => {
+                console.log("[sdk] conversation closed");
+                resolve();
+            })
+            .catch((err) => {
+                console.error("[sdk] can't close conversation - error", err);
+                reject();
+            });
+    });
 };
 
 export const updateBubbleCustomData = (fileId, guestId, publicURL, expirationDate, bubble) => {
     return new Promise((resolve, reject) => {
-        let customData = bubble.customData;
-
-        const file = {
+        const data = {
             guestId,
             publicURL,
             expirationDate,
         };
 
-        customData[fileId] = file;
+        const customData = {};
+        customData[fileId] = data;
+
+        const updatedCustomData = Object.assign(bubble.customData, customData);
 
         sdk.bubbles
-            .updateCustomDataForBubble(customData, bubble)
+            .updateCustomDataForBubble(updatedCustomData, bubble)
             .then((updatedBubble) => {
                 console.log("[sdk] bubble updated", updatedBubble);
                 resolve(bubble);
             })
             .catch((err) => {
                 console.error("[sdk] can't update custom data", err);
+                reject();
             });
     });
 };
@@ -205,12 +214,10 @@ export const getSharedFilesFromBubble = async (bubble) => {
         });
 
         const filesWithData = files.map((file) => {
-            let data = bubble.customData[file.id];
+            let data = Object.assign({}, bubble.customData[file.id]);
             data.file = file;
             return data;
         });
-
-        console.log(">>>filesWithData", filesWithData);
 
         return filesWithData;
     } catch (err) {
@@ -227,11 +234,13 @@ export const getOrCreateRoom = async () => {
         if (bubble.length === 1) {
             console.log("[sdk] bubble found", bubble[0]);
             resolve(bubble[0]);
+            return;
         }
 
         sdk.bubbles
             .createBubble("Sharing", "Created by Sharing application - do not remove")
             .then((bubble) => {
+                console.log("[sdk] bubble created", bubble);
                 resolve(bubble);
             })
             .catch((err) => {

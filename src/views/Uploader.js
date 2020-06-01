@@ -15,8 +15,9 @@ import { uploadFile } from "../actions/shareAction";
 
 import { LinearProgress } from "@material-ui/core";
 import ConnectionContext from "../contexts/connectionContext";
+import { updateDataInBubble } from "../actions/connectionAction";
 
-function Uploader({ dispatch }) {
+function Uploader({ dispatchConnection, dispatchShare }) {
     const inputFile = useRef();
 
     const [file, setFile] = useState(null);
@@ -44,7 +45,11 @@ function Uploader({ dispatch }) {
 
     useEffect(() => {
         if (file) {
-            uploadFile(file, config().guest_ttl, appState.bubble, dispatch);
+            uploadFile(file, config().guest_ttl, dispatchShare)
+                .then((data) => {
+                    updateDataInBubble(data, appState.bubble, dispatchConnection);
+                })
+                .catch((err) => {});
         }
     }, [file]);
 

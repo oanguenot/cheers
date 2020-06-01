@@ -1,12 +1,7 @@
 import moment from "moment";
 
 import { requestId } from "../modules/Config";
-import {
-    getConversationFromContactId,
-    shareFileInConversation,
-    closeOpenedConversation,
-    updateBubbleCustomData,
-} from "../modules/SDK";
+import { getConversationFromContactId, shareFileInConversation, closeOpenedConversation } from "../modules/SDK";
 import { generateLink } from "../modules/Link";
 
 const UPDATE_PROGRESS = "UPDATE_PROGRESS";
@@ -17,7 +12,7 @@ const UPDATE_START = "UPDATE_START";
 
 export { UPDATE_PROGRESS, UPDATE_CANCELED, UPDATE_COMPLETED, UPDATE_ERROR, UPDATE_START };
 
-export const uploadFile = (file, ttl, bubble, dispatch) => {
+export const uploadFile = (file, ttl, dispatch) => {
     const onFileUploadProgress = (id, progress) => {
         dispatch({ type: UPDATE_PROGRESS, payload: { id, progress } });
     };
@@ -30,48 +25,53 @@ export const uploadFile = (file, ttl, bubble, dispatch) => {
         dispatch({ type: UPDATE_COMPLETED, payload: { id } });
     };
 
-    dispatch({ type: UPDATE_PROGRESS, payload: {} });
+    return new Promise((resolve, reject) => {
+        dispatch({ type: UPDATE_PROGRESS, payload: {} });
 
-    const expirationDate = moment(Date.now()).add(ttl, "seconds").toDate();
-    let fileId = null;
-    let guestId = null;
-    let conversation = null;
-    let publicLink = null;
+        const expirationDate = moment(Date.now()).add(ttl, "seconds").toDate();
+        let fileId = null;
+        let guestId = null;
+        let conversation = null;
+        let publicLink = null;
 
-    requestId(ttl)
-        .then((id) => {
-            guestId = id;
-            return getConversationFromContactId(guestId);
-        })
-        .then((conv) => {
-            conversation = conv;
-            return shareFileInConversation(
-                file,
-                conversation,
-                onFileUploadProgress,
-                onFileUploadDone,
-                onFileUploadError
-            );
-        })
-        .then((message) => {
-            fileId = message.fileId;
+        requestId(ttl)
+            .then((id) => {
+                guestId = id;
+                return getConversationFromContactId(guestId);
+            })
+            .then((conv) => {
+                conversation = conv;
+                return shareFileInConversation(
+                    file,
+                    conversation,
+                    onFileUploadProgress,
+                    onFileUploadDone,
+                    onFileUploadError
+                );
+            })
+            .then((message) => {
+                fileId = message.fileId;
+                return generateLink(guestId, fileId);
+            })
+            .then((link) => {
+                publicLink = link;
+                return closeOpenedConversation(conversation);
+            })
+            .then(() => {
+                dispatch({ type: UPDATE_COMPLETED, payload: {} });
 
-            return generateLink(guestId, fileId);
-        })
-        .then((link) => {
-            publicLink = link;
-            return closeOpenedConversation(conversation);
-        })
-        .then(() => {
-            return updateBubbleCustomData(fileId, guestId, publicLink, expirationDate, bubble);
-        })
-        .then((updatedBubble) => {
-            //dispatch({ type: SET_BUBBLE, payload: { bubble: updatedBubble } });
-            dispatch({ type: UPDATE_COMPLETED, payload: {} });
-        })
-        .catch((err) => {
-            dispatch({ type: UPDATE_ERROR, payload: {} });
-        });
+                const data = {
+                    fileId,
+                    guestId,
+                    publicLink,
+                    expirationDate,
+                };
 
-    // Generate GuestID
+                resolve(data);
+            })
+            .catch((err) => {
+                dispatch({ type: UPDATE_ERROR, payload: {} });
+                reject();
+            });
+    });
 };

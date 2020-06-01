@@ -51,7 +51,7 @@ function Signed({ dispatch }) {
                 {appState.connectionState === "connected" && (
                     <ShareContext.Provider value={shareState}>
                         <div className={classes.connected_area}>
-                            <Uploader dispatch={dispatcher} />
+                            <Uploader dispatchShare={dispatcher} dispatchConnection={dispatch} />
                             <Files />
                         </div>
                     </ShareContext.Provider>

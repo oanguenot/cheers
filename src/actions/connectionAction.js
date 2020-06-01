@@ -1,4 +1,4 @@
-import { connectWithToken, getOrCreateRoom } from "../modules/SDK";
+import { connectWithToken, getOrCreateRoom, updateBubbleCustomData } from "../modules/SDK";
 
 const SWITCH_TO_CONNECTED = "SWITCH_TO_CONNECTED";
 const SWITCH_TO_DISCONNECTED = "SWITCH_TO_DISCONNETED";
@@ -32,4 +32,12 @@ export const signinWithOAuthToken = (oauth_token, dispatch) => {
         .catch((err) => {
             dispatch({ type: SWITCH_TO_ABORTED, payload: err });
         });
+};
+
+export const updateDataInBubble = (data, bubble, dispatch) => {
+    updateBubbleCustomData(data.fileId, data.guestId, data.publicLink, data.expirationDate, bubble)
+        .then((updatedBubble) => {
+            dispatch({ type: SET_BUBBLE, payload: { bubble: updatedBubble } });
+        })
+        .catch((err) => {});
 };
