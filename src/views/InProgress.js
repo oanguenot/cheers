@@ -3,7 +3,7 @@ import React from "react";
 import Container from "@material-ui/core/Container";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Grid from "@material-ui/core/Grid";
-import FileCopy from "@material-ui/icons/FileCopy";
+import CloudCircle from "@material-ui/icons/CloudCircle";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -28,7 +28,6 @@ function InProgress({ dispatch }) {
         },
         placeHolderLogo: {
             fontSize: "128px",
-            color: theme.palette.grey[10],
         },
         placeHolderTitle: {
             color: theme.palette.grey[800],
@@ -44,7 +43,7 @@ function InProgress({ dispatch }) {
                     <LinearProgress />
                 </div>
                 <div className={classes.placeHolder}>
-                    <FileCopy className={classes.placeHolderLogo} />
+                    <CloudCircle className={classes.placeHolderLogo} />
                     <Typography variant="h6" className={classes.placeHolderTitle}>
                         We are loading your data...
                     </Typography>

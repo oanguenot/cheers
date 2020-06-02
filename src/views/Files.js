@@ -122,8 +122,8 @@ function Files({ dispatch }) {
                                             primary={<Typography variant="h6">{file.fileName}</Typography>}
                                             secondary={
                                                 <Typography
-                                                    variant="body1"
-                                                    style={{ color: hasExpired ? "#ff6f00" : "#cccccc" }}
+                                                    variant="body2"
+                                                    style={{ color: hasExpired ? "#ff0000" : "#cccccc" }}
                                                 >
                                                     {message}
                                                 </Typography>
