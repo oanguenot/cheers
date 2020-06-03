@@ -24,7 +24,7 @@ const processRequestData = (request) => {
 };
 
 const encode = (fileId, guestId, host, secret) => {
-    var cipherText = CryptoJS.AES.encrypt(`${fileId}|${guestId}`, secret).toString();
+    var cipherText = CryptoJS.AES.encrypt(`${guestId}|${fileId}`, secret).toString();
     var encoded = encodeURIComponent(cipherText);
     return `${host}/public?link=${encoded}`;
 };
@@ -62,7 +62,7 @@ module.exports = async (req, res) => {
             const link = url.searchParams.get("value");
 
             if (!link || link.length === 0) {
-                res.writeHead(404, "ERROR", { "Content-Type": "application/json" });
+                res.writeHead(401, "ERROR", { "Content-Type": "application/json" });
                 res.end(JSON.stringify({ code: 401, reason: "invalid link parameter" }));
                 return;
             }

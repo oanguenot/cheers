@@ -6,8 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import ConnectionContext from "../contexts/connectionContext";
 import TopBar from "./TopBar";
-import Files from "./Files";
-import Uploader from "./Uploader";
 import Footer from "./Footer";
 import InProgress from "./InProgress";
 import Header from "./Header";
@@ -15,8 +13,8 @@ import Header from "./Header";
 import ShareContext from "../contexts/shareContext";
 
 import { shareReducer, initialShareState } from "../reducers/shareReducer";
-import { signinWithOAuthToken } from "../actions/connectionAction";
 import { getInfoFromLink } from "../modules/Link";
+import { getValidTokenForGuest } from "../modules/Guest";
 
 function Public({ dispatch }) {
     let location = useLocation();
@@ -32,6 +30,10 @@ function Public({ dispatch }) {
         getInfoFromLink(link)
             .then((info) => {
                 console.log(">>>INFO", info);
+                return getValidTokenForGuest(info.guestId);
+            })
+            .then((token) => {
+                console.log("token", token);
             })
             .catch((err) => {
                 console.error(">>> ERROR", err);
