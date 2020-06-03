@@ -40,6 +40,7 @@ function SharePopup(props) {
 
     const handleClose = () => {
         props.onClose();
+        setCopied(false);
     };
 
     const handleCopyToClipboard = (e) => {

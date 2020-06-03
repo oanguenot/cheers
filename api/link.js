@@ -1,46 +1,51 @@
 const CryptoJS = require("crypto-js");
 
-const processPost = (request, response, callback) => {
-    var queryData = "";
-    if (typeof callback !== "function") return null;
+const processRequestData = (request) => {
+    return new Promise((resolve, reject) => {
+        var queryData = "";
 
-    if (request.method === "POST") {
-        request.on("data", function (data) {
-            queryData += data;
-            if (queryData.length > 1e6) {
-                queryData = "";
-                response.writeHead(413, { "Content-Type": "text/plain" }).end();
-                request.connection.destroy();
-            }
-        });
+        if (request.method === "POST") {
+            request.on("data", function (data) {
+                queryData += data;
+                if (queryData.length > 1e6) {
+                    queryData = "";
+                    reject({ code: 413, reason: "too many data received" });
+                    //request.connection.destroy();
+                }
+            });
 
-        request.on("end", function () {
-            request.post = JSON.parse(queryData);
-            callback();
-        });
-    } else {
-        response.writeHead(405, { "Content-Type": "text/plain" });
-        response.end();
-    }
+            request.on("end", function () {
+                resolve(JSON.parse(queryData));
+            });
+        } else {
+            reject({ code: 405, reason: "not valid request method" });
+        }
+    });
 };
 
 const encode = (fileId, guestId, host, secret) => {
     var cipherText = CryptoJS.AES.encrypt(`${fileId}|${guestId}`, secret).toString();
-    return `${host}/public/${cipherText}`;
+    var encoded = encodeURIComponent(cipherText);
+    return `${host}/public?link=${encoded}`;
 };
 
 const decode = (encodedString, secret) => {
-    const bytes = CryptoJS.AES.decrypt(encodedString, secret);
-    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+    try {
+        const bytes = CryptoJS.AES.decrypt(encodedString, secret);
+        const originalText = bytes.toString(CryptoJS.enc.Utf8);
+        const data = originalText.split("|");
 
-    const data = originalText.split("|");
-
-    if (data.length === 2) {
-        return {
-            guestId: data[0],
-            fileId: data[1],
-        };
-    } else {
+        if (data && data.length === 2) {
+            return {
+                guestId: data[0],
+                fileId: data[1],
+            };
+        } else {
+            console.log("[svless link] can't decode link");
+            return null;
+        }
+    } catch (err) {
+        console.log("[svless link] error decoding link", err);
         return null;
     }
 };
@@ -51,26 +56,47 @@ module.exports = async (req, res) => {
 
     switch (req.method) {
         case "GET":
-            // Decode the public URL and return the guestId and fileID
-            console.log("SERVER GET");
+            console.log("[svless link] GET");
+
+            const url = new URL(req.url, vercel_url);
+            const link = url.searchParams.get("value");
+
+            if (!link || link.length === 0) {
+                res.writeHead(404, "ERROR", { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ code: 401, reason: "invalid link parameter" }));
+                return;
+            }
+
+            const info = decode(decodeURIComponent(link), secret);
+
+            if (!info) {
+                res.writeHead(404, "ERROR", { "Content-Type": "application/json" });
+                res.end(JSON.stringify({ code: 401, reason: "invalid link content" }));
+                return;
+            }
+
+            res.writeHead(200, "OK", { "Content-Type": "application/json" });
+            res.end(JSON.stringify(info));
 
             break;
         case "POST":
             // Encode the public URL
-            console.log("SERVER POST");
-            processPost(req, res, function () {
-                const publicUrl = encode(req.post.fileId, req.post.guestId, vercel_url, secret);
-
-                res.writeHead(200, "OK", { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ publicUrl: publicUrl }));
-                res.end();
-            });
-            break;
-        case "DELETE":
-            console.log("SERVER DELETE");
+            console.log("[svless link] POST");
+            processRequestData(req)
+                .then((data) => {
+                    const publicUrl = encode(data.fileId, data.guestId, vercel_url, secret);
+                    res.writeHead(200, "OK", { "Content-Type": "application/json" });
+                    res.end(JSON.stringify({ publicUrl: publicUrl }));
+                })
+                .catch((err) => {
+                    res.writeHead(err.code, "ERROR", { "Content-Type": "application/json" });
+                    res.end(JSON.stringify(err));
+                });
             break;
         default:
-            console.log("SERVER OTHER");
+            console.log("[svless link] OTHER");
+            res.writeHead(404, "ERROR", { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ code: 404, reason: "no valid endpoint" }));
             break;
     }
 };

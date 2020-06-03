@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import Signin from "./Signin";
 import Signed from "./Signed";
+import Public from "./Public";
 
 import ConnectionContext from "../contexts/connectionContext";
 
@@ -16,6 +17,7 @@ function AppRouter() {
             <Router>
                 <Route path="/" exact render={(props) => <Signin dispatch={dispatch} {...props} />} />
                 <Route path="/signed" render={(props) => <Signed dispatch={dispatch} {...props} />} />
+                <Route path="/public" render={(props) => <Public dispatch={dispatch} {...props} />} />
             </Router>
         </ConnectionContext.Provider>
     );
