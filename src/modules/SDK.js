@@ -274,9 +274,11 @@ export const deleteFile = async (file) => {
             .removeFile(file)
             .then((res) => {
                 console.log("[sdk] file deleted", file.id);
+                resolve();
             })
             .catch((err) => {
-                console.log("[sdk] can't delete file", file.id);
+                console.log("[sdk] can't delete file", err);
+                reject({ reason: "can't delete bubble" });
             });
     });
 };

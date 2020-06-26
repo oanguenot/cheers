@@ -20,6 +20,7 @@ import { STATE } from "../reducers/connectionReducer";
 import { getQuota, getSharedFilesFromBubble, removeFileFromBubbleCustomData } from "../modules/SDK";
 import SharePopup from "./SharePopup";
 import { removeFile } from "../actions/shareAction";
+import { removeFileFromBubble } from "../actions/bubbleAction";
 
 function Files({ dispatchShare, dispatchBubble }) {
     const appState = useContext(ConnectionContext);
@@ -87,11 +88,12 @@ function Files({ dispatchShare, dispatchBubble }) {
         setOpen(false);
     }
 
-    function handleDelete(file) {
+    function handleDelete(storedFile) {
         setOpen(false);
-        removeFile(file, dispatchShare)
-            .then((data) => {
-                removeFileFromBubbleCustomData(file.id, dispatchBubble);
+        console.log("file", storedFile);
+        removeFile(storedFile.file, dispatchShare)
+            .then(() => {
+                removeFileFromBubble(storedFile.file, bubbleState.bubble, dispatchBubble);
             })
             .catch((err) => {});
     }
@@ -140,7 +142,7 @@ function Files({ dispatchShare, dispatchBubble }) {
                                             primary={
                                                 <Typography
                                                     variant="h6"
-                                                    style={{ color: hasExpired ? "#0000008a" : "#3f51b5" }}
+                                                    style={{ color: hasExpired ? "#0000008a" : "#000" }}
                                                 >
                                                     {file.fileName}
                                                 </Typography>
@@ -149,7 +151,7 @@ function Files({ dispatchShare, dispatchBubble }) {
                                                 <Typography
                                                     variant="body2"
                                                     style={{
-                                                        color: hasExpired ? "#00000059" : "#3f51b580",
+                                                        color: hasExpired ? "#00000059" : "#333",
                                                     }}
                                                 >
                                                     {message}

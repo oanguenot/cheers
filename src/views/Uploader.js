@@ -14,7 +14,7 @@ import ShareContext from "../contexts/shareContext";
 import { uploadFile } from "../actions/shareAction";
 
 import { LinearProgress } from "@material-ui/core";
-import { updateDataInBubble } from "../actions/bubbleAction";
+import { addFileToBubble } from "../actions/bubbleAction";
 import BubbleContext from "../contexts/bubbleContext";
 
 function Uploader({ dispatchShare, dispatchBubble }) {
@@ -47,7 +47,7 @@ function Uploader({ dispatchShare, dispatchBubble }) {
         if (file) {
             uploadFile(file, config().guest_ttl, dispatchShare)
                 .then((data) => {
-                    updateDataInBubble(data, bubbleState.bubble, dispatchBubble);
+                    addFileToBubble(data, bubbleState.bubble, dispatchBubble);
                 })
                 .catch((err) => {});
         }
