@@ -4,7 +4,6 @@ import {
     SWITCH_TO_ERROR,
     SWITCH_TO_INPROGRESS,
     SWITCH_TO_ABORTED,
-    SET_BUBBLE,
 } from "../actions/connectionAction";
 
 const initialConnectionState = {
@@ -17,11 +16,10 @@ export const STATE = {
     CONNECTED: "connected",
     ERROR: "error",
     ABORTED: "aborted",
-    bubble: null,
 };
 
 const connectionReducer = (state = initialConnectionState, action) => {
-    console.log("[connection state] --> ", action.type);
+    console.log(`model::reduce ${action.type}`);
 
     switch (action.type) {
         case SWITCH_TO_CONNECTED:
@@ -34,8 +32,6 @@ const connectionReducer = (state = initialConnectionState, action) => {
             return { ...state, connectionState: STATE.INPROGRESS };
         case SWITCH_TO_ABORTED:
             return { ...state, connectionState: STATE.ERROR };
-        case SET_BUBBLE:
-            return { ...state, bubble: action.payload.bubble };
         default:
             return state;
     }

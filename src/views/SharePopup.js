@@ -25,6 +25,9 @@ function SharePopup(props) {
         buttonCopied: {
             marginTop: theme.spacing(2),
         },
+        buttonClose: {
+            marginTop: theme.spacing(2),
+        },
         copied: {
             marginLeft: theme.spacing(1),
             marginTop: theme.spacing(2),
@@ -40,6 +43,11 @@ function SharePopup(props) {
 
     const handleClose = () => {
         props.onClose();
+        setCopied(false);
+    };
+
+    const handleDelete = () => {
+        props.onDelete(props.fileData);
         setCopied(false);
     };
 
@@ -109,8 +117,8 @@ function SharePopup(props) {
                     </form>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant="outlined" color="secondary">
-                        Delete
+                    <Button onClick={handleDelete} variant="outlined" color="secondary">
+                        Unshare this file
                     </Button>
                     <Button onClick={handleClose} variant="contained" color="primary" autoFocus>
                         Close

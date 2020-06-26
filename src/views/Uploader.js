@@ -14,16 +14,16 @@ import ShareContext from "../contexts/shareContext";
 import { uploadFile } from "../actions/shareAction";
 
 import { LinearProgress } from "@material-ui/core";
-import ConnectionContext from "../contexts/connectionContext";
-import { updateDataInBubble } from "../actions/connectionAction";
+import { updateDataInBubble } from "../actions/bubbleAction";
+import BubbleContext from "../contexts/bubbleContext";
 
-function Uploader({ dispatchConnection, dispatchShare }) {
+function Uploader({ dispatchShare, dispatchBubble }) {
     const inputFile = useRef();
 
     const [file, setFile] = useState(null);
 
     const shareState = useContext(ShareContext);
-    const appState = useContext(ConnectionContext);
+    const bubbleState = useContext(BubbleContext);
 
     const useStyles = makeStyles((theme) => ({
         heroButtons: {
@@ -47,7 +47,7 @@ function Uploader({ dispatchConnection, dispatchShare }) {
         if (file) {
             uploadFile(file, config().guest_ttl, dispatchShare)
                 .then((data) => {
-                    updateDataInBubble(data, appState.bubble, dispatchConnection);
+                    updateDataInBubble(data, bubbleState.bubble, dispatchBubble);
                 })
                 .catch((err) => {});
         }

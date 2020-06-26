@@ -1,11 +1,13 @@
-import { connectWithToken, getOrCreateRoom, updateBubbleCustomData } from "../modules/SDK";
+import { connectWithToken, addFileToBubbleCustomData } from "../modules/SDK";
+import { getInfoFromLink } from "../modules/Link";
+import { getValidTokenForGuest } from "../modules/Guest";
 
 const SWITCH_TO_CONNECTED = "SWITCH_TO_CONNECTED";
 const SWITCH_TO_DISCONNECTED = "SWITCH_TO_DISCONNETED";
-const SWITCH_TO_INPROGRESS = "SWITCH_TO_DISCONNSWITCH_TO_INPROGRESSTED";
+const SWITCH_TO_INPROGRESS = "SWITCH_TO_INPROGRESS";
 const SWITCH_TO_ERROR = "SWITCH_TO_ERROR";
 const SWITCH_TO_ABORTED = "SWITCH_TO_ABORTED";
-const SET_BUBBLE = "SET_BUBBLE";
+// const SET_BUBBLE = "SET_BUBBLE";
 
 export {
     SWITCH_TO_CONNECTED,
@@ -13,20 +15,15 @@ export {
     SWITCH_TO_ERROR,
     SWITCH_TO_INPROGRESS,
     SWITCH_TO_ABORTED,
-    SET_BUBBLE,
+    // SET_BUBBLE,
 };
 
 export const signinWithOAuthToken = (oauth_token, dispatch) => {
+    console.log("model::action signinWithOAuthToken");
     dispatch({ type: SWITCH_TO_INPROGRESS, payload: {} });
 
-    // 1. signin
     connectWithToken(oauth_token)
         .then(() => {
-            //2. get bubble
-            return getOrCreateRoom();
-        })
-        .then((bubble) => {
-            dispatch({ type: SET_BUBBLE, payload: { bubble: bubble } });
             dispatch({ type: SWITCH_TO_CONNECTED, payload: {} });
         })
         .catch((err) => {
@@ -34,10 +31,30 @@ export const signinWithOAuthToken = (oauth_token, dispatch) => {
         });
 };
 
-export const updateDataInBubble = (data, bubble, dispatch) => {
-    updateBubbleCustomData(data.fileId, data.guestId, data.publicLink, data.expirationDate, bubble)
-        .then((updatedBubble) => {
-            dispatch({ type: SET_BUBBLE, payload: { bubble: updatedBubble } });
+// export const updateDataInBubble = (data, bubble, dispatch) => {
+//     console.log("model::action updateDataInBubble");
+//     addFileToBubbleCustomData(data.fileId, data.guestId, data.publicLink, data.expirationDate, bubble)
+//         .then((updatedBubble) => {
+//             dispatch({ type: SET_BUBBLE, payload: { bubble: updatedBubble } });
+//         })
+//         .catch((err) => {});
+// };
+
+export const signinWithLink = (link, dispatch) => {
+    console.log("model::action signinWithLink");
+    dispatch({ type: SWITCH_TO_INPROGRESS, payload: {} });
+
+    getInfoFromLink(link)
+        .then((info) => {
+            return getValidTokenForGuest(info.guestId);
         })
-        .catch((err) => {});
+        .then((token) => {
+            return connectWithToken(token);
+        })
+        .then(() => {
+            dispatch({ type: SWITCH_TO_CONNECTED, payload: {} });
+        })
+        .catch((err) => {
+            dispatch({ type: SWITCH_TO_ABORTED, payload: err });
+        });
 };

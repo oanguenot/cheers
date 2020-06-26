@@ -9,12 +9,13 @@ import TopBar from "./TopBar";
 import Footer from "./Footer";
 import InProgress from "./InProgress";
 import Header from "./Header";
+import GuestError from "./GuestError";
 
 import ShareContext from "../contexts/shareContext";
 
 import { shareReducer, initialShareState } from "../reducers/shareReducer";
-import { getInfoFromLink } from "../modules/Link";
-import { getValidTokenForGuest } from "../modules/Guest";
+
+import { signinWithLink } from "../actions/connectionAction";
 
 function Public({ dispatch }) {
     let location = useLocation();
@@ -27,18 +28,7 @@ function Public({ dispatch }) {
     const appState = useContext(ConnectionContext);
 
     useEffect(() => {
-        getInfoFromLink(link)
-            .then((info) => {
-                console.log(">>>INFO", info);
-                return getValidTokenForGuest(info.guestId);
-            })
-            .then((token) => {
-                console.log("token", token);
-            })
-            .catch((err) => {
-                console.error(">>> ERROR", err);
-            });
-        //signinWithOAuthToken(access_token, dispatch);
+        signinWithLink(link, dispatch);
     }, []);
 
     useEffect(() => {}, [appState]);
@@ -64,7 +54,8 @@ function Public({ dispatch }) {
                         </div>
                     </ShareContext.Provider>
                 )}
-                {(appState.connectionState === "inprogress" || appState.connectionState === "error") && <InProgress />}
+                {appState.connectionState === "inprogress" && <InProgress />}
+                {(appState.connectionState === "aborded" || appState.connectionState === "error") && <GuestError />}
             </main>
             <Footer />
         </React.Fragment>

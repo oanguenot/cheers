@@ -173,7 +173,7 @@ export const closeOpenedConversation = (conversation) => {
     });
 };
 
-export const updateBubbleCustomData = (fileId, guestId, publicURL, expirationDate, bubble) => {
+export const addFileToBubbleCustomData = (fileId, guestId, publicURL, expirationDate, bubble) => {
     return new Promise((resolve, reject) => {
         const data = {
             guestId,
@@ -185,6 +185,24 @@ export const updateBubbleCustomData = (fileId, guestId, publicURL, expirationDat
         customData[fileId] = data;
 
         const updatedCustomData = Object.assign(bubble.customData, customData);
+
+        sdk.bubbles
+            .updateCustomDataForBubble(updatedCustomData, bubble)
+            .then((updatedBubble) => {
+                console.log("[sdk] bubble updated", updatedBubble);
+                resolve(bubble);
+            })
+            .catch((err) => {
+                console.error("[sdk] can't update custom data", err);
+                reject();
+            });
+    });
+};
+
+export const removeFileFromBubbleCustomData = (fileId, bubble) => {
+    return new Promise((resolve, reject) => {
+        let updatedCustomData = Object.assign({}, bubble.customData);
+        delete updatedCustomData[fileId];
 
         sdk.bubbles
             .updateCustomDataForBubble(updatedCustomData, bubble)
@@ -246,6 +264,19 @@ export const getOrCreateRoom = async () => {
             .catch((err) => {
                 console.log("[sdk] can't create bubble", err);
                 reject({ reason: "can't create bubble" });
+            });
+    });
+};
+
+export const deleteFile = async (file) => {
+    return new Promise((resolve, reject) => {
+        sdk.fileStorage
+            .removeFile(file)
+            .then((res) => {
+                console.log("[sdk] file deleted", file.id);
+            })
+            .catch((err) => {
+                console.log("[sdk] can't delete file", file.id);
             });
     });
 };

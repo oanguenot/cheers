@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@abdulghani/combinereducer@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@abdulghani/combinereducer/-/combinereducer-1.0.7.tgz#f047df242bd7a086e621178e5dda7b4922d9fa08"
+  integrity sha512-TtcfjK7c+JBYyDDJoHvkOt3dJizBrOpr5su2oiV8I64kD9t9eE0TOJrYvchxCin8ZFT3X3dk/SSWbDMyJinFNw==
+
 "@babel/code-frame@7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.8.3.tgz#33e25903d7481181534e12ec0a25f16b6fcf419e"

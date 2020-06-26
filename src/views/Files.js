@@ -14,14 +14,18 @@ import ListItemText from "@material-ui/core/ListItemText";
 import CloudCircle from "@material-ui/icons/CloudCircleTwoTone";
 
 import ConnectionContext from "../contexts/connectionContext";
+import BubbleContext from "../contexts/bubbleContext";
+import { STATE } from "../reducers/connectionReducer";
 
 import { getQuota, getSharedFilesFromBubble } from "../modules/SDK";
 import SharePopup from "./SharePopup";
 
 function Files({ dispatch }) {
+    const appState = useContext(ConnectionContext);
+    const bubbleState = useContext(BubbleContext);
+
     const [quota, setQuota] = useState(0);
     const [files, setFiles] = useState([]);
-    const appState = useContext(ConnectionContext);
     const [file, setFile] = useState();
     const [open, setOpen] = useState(false);
 
@@ -35,13 +39,13 @@ function Files({ dispatch }) {
 
     useEffect(() => {
         const fetchFiles = async () => {
-            const f = await getSharedFilesFromBubble(appState.bubble);
+            const f = await getSharedFilesFromBubble(bubbleState.bubble);
             setFiles(f);
         };
-        if (appState.connectionState === "connected" && appState.bubble) {
+        if (appState.connectionState === STATE.CONNECTED && bubbleState.bubble) {
             fetchFiles();
         }
-    }, [appState]);
+    }, [bubbleState, appState.connectionState]);
 
     const useStyles = makeStyles((theme) => ({
         files_list_title: {},
@@ -53,9 +57,11 @@ function Files({ dispatch }) {
             paddingTop: "50%",
         },
         files_list: {
-            height: "calc(100% - 32px)",
+            height: "calc(100% - 64px)",
             overflowY: "scroll",
             padding: 0,
+            backgroundColor: "#fafafa",
+            borderRadius: theme.spacing(1),
         },
         cardContainer: {
             paddingTop: theme.spacing(4),
@@ -78,6 +84,11 @@ function Files({ dispatch }) {
 
     function handleClose() {
         setOpen(false);
+    }
+
+    function handleDelete(file) {
+        setOpen(false);
+        console.log("file", file);
     }
 
     return (
@@ -144,7 +155,7 @@ function Files({ dispatch }) {
                     </Container>
                 )}
             </Grid>
-            <SharePopup open={open} fileData={file} onClose={handleClose} />
+            <SharePopup open={open} fileData={file} onClose={handleClose} onDelete={handleDelete} />
         </Container>
     );
 }

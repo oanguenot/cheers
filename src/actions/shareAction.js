@@ -1,7 +1,12 @@
 import moment from "moment";
 
 import { requestId } from "../modules/Config";
-import { getConversationFromContactId, shareFileInConversation, closeOpenedConversation } from "../modules/SDK";
+import {
+    getConversationFromContactId,
+    shareFileInConversation,
+    closeOpenedConversation,
+    deleteFile,
+} from "../modules/SDK";
 import { generateLink } from "../modules/Link";
 
 const UPDATE_PROGRESS = "UPDATE_PROGRESS";
@@ -9,8 +14,20 @@ const UPDATE_CANCELED = "UPDATE_CANCELED";
 const UPDATE_COMPLETED = "UPDATE_COMPLETED";
 const UPDATE_ERROR = "UPDATE_ERROR";
 const UPDATE_START = "UPDATE_START";
+const DELETE_PROGRESS = "DELETE_PROGRESS";
+const DELETE_ERROR = "DELETE_ERROR";
+const DELETE_COMPLETED = "DELETE_COMPLETED";
 
-export { UPDATE_PROGRESS, UPDATE_CANCELED, UPDATE_COMPLETED, UPDATE_ERROR, UPDATE_START };
+export {
+    UPDATE_PROGRESS,
+    UPDATE_CANCELED,
+    UPDATE_COMPLETED,
+    UPDATE_ERROR,
+    UPDATE_START,
+    DELETE_COMPLETED,
+    DELETE_PROGRESS,
+    DELETE_ERROR,
+};
 
 export const uploadFile = (file, ttl, dispatch) => {
     const onFileUploadProgress = (id, progress) => {
@@ -26,7 +43,9 @@ export const uploadFile = (file, ttl, dispatch) => {
     };
 
     return new Promise((resolve, reject) => {
-        dispatch({ type: UPDATE_PROGRESS, payload: {} });
+        console.log("model::action uploadFile");
+
+        dispatch({ type: UPDATE_START, payload: {} });
 
         const expirationDate = moment(Date.now()).add(ttl, "seconds").toDate();
         let fileId = null;
@@ -71,6 +90,24 @@ export const uploadFile = (file, ttl, dispatch) => {
             })
             .catch((err) => {
                 dispatch({ type: UPDATE_ERROR, payload: {} });
+                reject();
+            });
+    });
+};
+
+export const removeFile = async (file, dispatch) => {
+    return new Promise((resolve, reject) => {
+        console.log("model::action uploadFile");
+
+        dispatch({ type: DELETE_PROGRESS, payload: {} });
+
+        deleteFile(file)
+            .then((res) => {
+                dispatch({ type: DELETE_COMPLETED, payload: {} });
+                resolve();
+            })
+            .catch((err) => {
+                dispatch({ type: DELETE_ERROR, payload: {} });
                 reject();
             });
     });

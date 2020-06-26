@@ -2,7 +2,7 @@ const axios = require("axios");
 const crypto = require("crypto-js");
 
 module.exports = {
-    loginAsAdmin: async (email, password, id, secret, host) => {
+    loginOnBehalf: async (email, password, id, secret, host) => {
         return new Promise((resolve, reject) => {
             const auth = Buffer.from(email + ":" + password).toString("base64");
             const appAuth = Buffer.from(id + ":" + crypto.SHA256(secret + password)).toString("base64");
@@ -17,11 +17,11 @@ module.exports = {
             axios
                 .get(authenticateURL, { headers: headers })
                 .then((response) => {
-                    console.log("[admin] loginAsAdmin - got token", response.data.token);
+                    console.log("[srvless] loginOnBehalf - got token", response.data.token);
                     resolve(response.data.token);
                 })
                 .catch((err) => {
-                    console.log("[admin] loginAsAdmin - can't log-in", err);
+                    console.log("[srvless] loginOnBehalf - can't log-in", err);
                     reject(err);
                 });
         });
@@ -42,11 +42,11 @@ module.exports = {
             axios
                 .get(getUserURL, { headers: headers })
                 .then((response) => {
-                    console.log("[admin] getGuestById - got guest data", response.data.data);
+                    console.log("[srvless] getGuestById - got guest data", response.data.data);
                     resolve(response.data.data);
                 })
                 .catch((err) => {
-                    console.log("[admin] getGuestById - can't get guest data", err);
+                    console.log("[srvless] getGuestById - can't get guest data", err);
                     reject(err);
                 });
         });

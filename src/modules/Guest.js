@@ -6,7 +6,7 @@ export const getValidTokenForGuest = (guestId) => {
             .get(`/api/guest?id=${guestId}`)
             .then(function (response) {
                 // handle success
-                resolve(response.data);
+                resolve(response.data.token);
             })
             .catch(function (error) {
                 // handle error

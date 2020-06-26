@@ -1,14 +1,8 @@
-import {
-    SET_BUBBLE,
-    UPDATE_PROGRESS,
-    UPDATE_COMPLETED,
-    UPDATE_CANCELED,
-    UPDATE_ERROR,
-    UPDATE_START,
-} from "../actions/shareAction";
+import { UPDATE_START, UPDATE_PROGRESS, UPDATE_COMPLETED, UPDATE_CANCELED, UPDATE_ERROR } from "../actions/shareAction";
 
 export const UPLOAD_STATE = {
     NOT_STARTED: "notstarted",
+    STARTED: "started",
     INPROGRESS: "inprogress",
     SUCCESS: "success",
     ERROR: "error",
@@ -24,9 +18,17 @@ const initialShareState = {
 };
 
 const shareReducer = (state = initialShareState, action) => {
-    console.log("[share state] --> ", action.type);
+    console.log(`model::reduce ${action.type}`);
     switch (action.type) {
+        case UPDATE_START:
+            return {
+                ...state,
+                uploadInProgress: true,
+                progress: 0,
+                uploadStatus: UPLOAD_STATE.STARTED,
+            };
         case UPDATE_PROGRESS:
+            console.log(">>>", action.payload.progress);
             return {
                 ...state,
                 uploadInProgress: true,
