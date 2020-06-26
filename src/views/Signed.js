@@ -62,7 +62,7 @@ function Signed({ dispatch }) {
                         <ShareContext.Provider value={shareState}>
                             <div className={classes.connected_area}>
                                 <Uploader dispatchShare={dispatchShare} dispatchBubble={dispatchBubble} />
-                                <Files />
+                                <Files dispatchShare={dispatchShare} dispatchBubble={dispatchBubble} />
                             </div>
                         </ShareContext.Provider>
                     </BubbleContext.Provider>

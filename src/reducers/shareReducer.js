@@ -28,7 +28,6 @@ const shareReducer = (state = initialShareState, action) => {
                 uploadStatus: UPLOAD_STATE.STARTED,
             };
         case UPDATE_PROGRESS:
-            console.log(">>>", action.payload.progress);
             return {
                 ...state,
                 uploadInProgress: true,

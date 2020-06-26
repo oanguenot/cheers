@@ -17,10 +17,11 @@ import ConnectionContext from "../contexts/connectionContext";
 import BubbleContext from "../contexts/bubbleContext";
 import { STATE } from "../reducers/connectionReducer";
 
-import { getQuota, getSharedFilesFromBubble } from "../modules/SDK";
+import { getQuota, getSharedFilesFromBubble, removeFileFromBubbleCustomData } from "../modules/SDK";
 import SharePopup from "./SharePopup";
+import { removeFile } from "../actions/shareAction";
 
-function Files({ dispatch }) {
+function Files({ dispatchShare, dispatchBubble }) {
     const appState = useContext(ConnectionContext);
     const bubbleState = useContext(BubbleContext);
 
@@ -88,7 +89,11 @@ function Files({ dispatch }) {
 
     function handleDelete(file) {
         setOpen(false);
-        console.log("file", file);
+        removeFile(file, dispatchShare)
+            .then((data) => {
+                removeFileFromBubbleCustomData(file.id, dispatchBubble);
+            })
+            .catch((err) => {});
     }
 
     return (
@@ -127,14 +132,25 @@ function Files({ dispatch }) {
                                         }}
                                     >
                                         <ListItemIcon>
-                                            <CloudCircle style={{ fontSize: 36 }} />
+                                            <CloudCircle
+                                                style={{ fontSize: 36, color: hasExpired ? "#00000059" : "#3f51b5" }}
+                                            />
                                         </ListItemIcon>
                                         <ListItemText
-                                            primary={<Typography variant="h6">{file.fileName}</Typography>}
+                                            primary={
+                                                <Typography
+                                                    variant="h6"
+                                                    style={{ color: hasExpired ? "#0000008a" : "#3f51b5" }}
+                                                >
+                                                    {file.fileName}
+                                                </Typography>
+                                            }
                                             secondary={
                                                 <Typography
                                                     variant="body2"
-                                                    style={{ color: hasExpired ? "#ff0000" : "#cccccc" }}
+                                                    style={{
+                                                        color: hasExpired ? "#00000059" : "#3f51b580",
+                                                    }}
                                                 >
                                                     {message}
                                                 </Typography>
