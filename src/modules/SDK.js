@@ -158,6 +158,52 @@ export const shareFileInConversation = async (file, conversation, onUploadProgre
     });
 };
 
+export const downloadeFileFromConversation = async (file, onUploadProgress, onUploadEnded, onUploadError) => {
+    const onChunk = (event) => {
+        console.log("[sdk] download progress", event.detail);
+        onUploadProgress(event.detail.id, event.detail.chunkPerformedPercent || 5);
+    };
+
+    const onSuccess = (event) => {
+        console.log("[sdk] download successfully", event.detail);
+        onUploadEnded(event.detail.id);
+    };
+
+    const onError = (event) => {
+        console.log("[sdk] download error", event.detail);
+        onUploadError(event.detail.id);
+    };
+
+    const resetListener = () => {
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, onChunk);
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONFILEDOWNLOADED, onSuccess);
+        document.removeEventListener(sdk.fileStorage.RAINBOW_ONFILEDOWNLOADED_ERROR, onError);
+    };
+
+    const addListener = () => {
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONCHUNKLOADMESSAGE, onChunk);
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEDOWNLOADED, onSuccess);
+        document.addEventListener(sdk.fileStorage.RAINBOW_ONFILEDOWNLOADED_ERROR, onError);
+    };
+
+    return new Promise((resolve, reject) => {
+        addListener();
+
+        sdk.fileStorage
+            .downloadFile(file)
+            .then((blob) => {
+                console.log("[sdk] file downloaded", blob);
+                resetListener();
+                resolve(blob);
+            })
+            .catch((err) => {
+                console.error("[sdk] can't download file - error", err);
+                resetListener();
+                reject();
+            });
+    });
+};
+
 export const closeOpenedConversation = (conversation) => {
     return new Promise((resolve, reject) => {
         sdk.conversations
@@ -280,6 +326,39 @@ export const deleteFile = async (file) => {
                 console.log("[sdk] can't delete file", err);
                 reject({ reason: "can't delete bubble" });
             });
+    });
+};
+
+export const getUserFromActiveConversation = async () => {
+    return new Promise((resolve, reject) => {
+        let conversations = sdk.conversations.getAllConversations();
+
+        if (!conversations || conversations.length === 0) {
+            reject({ reason: "can't find conversation" });
+            return;
+        }
+
+        let conversation = conversations[0];
+
+        if (!conversation.contact) {
+            reject({ reason: "can't find contact" });
+            return;
+        }
+
+        resolve(conversation.contact);
+    });
+};
+
+export const getFileReceived = async () => {
+    return new Promise((resolve, reject) => {
+        let files = sdk.fileStorage.getAllFilesReceived();
+
+        if (!files || files.length === 0) {
+            reject({ reason: "can't find file" });
+            return;
+        }
+
+        resolve(files[0]);
     });
 };
 

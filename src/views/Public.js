@@ -11,16 +11,17 @@ import InProgress from "./InProgress";
 import Header from "./Header";
 import GuestError from "./GuestError";
 
-import ShareContext from "../contexts/shareContext";
+import GuestContext from "../contexts/guestContext";
 
-import { shareReducer, initialShareState } from "../reducers/shareReducer";
+import { guestReducer, initialGuestState } from "../reducers/guestReducer";
 
 import { signinWithLink } from "../actions/connectionAction";
+import Guest from "./Guest";
 
 function Public({ dispatch }) {
     let location = useLocation();
 
-    const [shareState, dispatcher] = useReducer(shareReducer, initialShareState);
+    const [guestState, dispatchGuest] = useReducer(guestReducer, initialGuestState);
 
     let query = new URLSearchParams(location.search);
     const link = query.get("link");
@@ -48,11 +49,11 @@ function Public({ dispatch }) {
             <main>
                 <Header />
                 {appState.connectionState === "connected" && (
-                    <ShareContext.Provider value={shareState}>
+                    <GuestContext.Provider value={guestState}>
                         <div className={classes.connected_area}>
-                            <h1>Welcome guest!</h1>
+                            <Guest dispatch={dispatchGuest} />
                         </div>
-                    </ShareContext.Provider>
+                    </GuestContext.Provider>
                 )}
                 {appState.connectionState === "inprogress" && <InProgress />}
                 {(appState.connectionState === "aborded" || appState.connectionState === "error") && <GuestError />}
