@@ -14,7 +14,7 @@
     "btoa": "^1.2.1",
     "crypto-js": "^4.0.0",
     "material-ui-image": "^3.2.3",
-    "moment": "2.27.0",
+    "moment": "2.29.4",
     "qs": "^6.9.4",
     "rainbow-web-sdk": "^1.70.0",
     "react": "^16.13.1",
