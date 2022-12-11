@@ -15,7 +15,7 @@
     "crypto-js": "^4.0.0",
     "material-ui-image": "^3.2.3",
     "moment": "2.27.0",
-    "qs": "^6.9.4",
+    "qs": "^6.9.7",
     "rainbow-web-sdk": "^1.70.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
